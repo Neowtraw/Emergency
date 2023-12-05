@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -79,4 +81,15 @@ dependencies {
     // navigation bar
     implementation("com.exyte:animated-navigation-bar:1.0.0")
 
+    // coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+
+}
+
+kapt {
+    correctErrorTypes = true
 }

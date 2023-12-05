@@ -13,11 +13,15 @@
     <color name="navbar_unselected">#929298</color>
     <color name="navbar_selected">#6853D8</color>
 
-    <color name="article_view_content">#FFFFFF</color>
-    <color name="article_view_stroke">#301269</color>
+    <color name="article_view_content">#3F51B5</color>
+    <color name="article_view_stroke">#3F51B5</color>
 
     <color name="main_text">#201732</color>
+    <color name="background">#FFFFFF</color>
 
     <color name="article_favorite_view_selected">#E68B29</color>
     <color name="article_favorite_view_unselected">#FAA81E</color>
+
+    <color name="contrast">#8295B6</color>
+    <color name="contrast_icons">#8295B6</color>
 </resources>

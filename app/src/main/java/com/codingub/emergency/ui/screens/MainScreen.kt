@@ -1,13 +1,24 @@
 package com.codingub.emergency.ui.screens
 
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import com.codingub.emergency.R
 import com.codingub.emergency.ui.theme.EmergencyTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
+    Column(Modifier.background(colorResource(id = R.color.contrast_icons))){
+        Text(text = "heeeeeell")
 
+    }
 }
 
 
@@ -15,6 +26,5 @@ fun MainScreen() {
 @Preview(device = "id:pixel_4a", showBackground = true, backgroundColor = 0xFF3A2F6E)
 private fun MainScreenPreview() {
     EmergencyTheme {
-        MainScreen()
     }
 }

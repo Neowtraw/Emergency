@@ -1,6 +1,5 @@
 package com.codingub.emergency
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +29,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.codingub.emergency.common.NavigationRoute.ARTICLES
+import com.codingub.emergency.common.NavigationRoute.HOME
+import com.codingub.emergency.common.NavigationRoute.INFO
+import com.codingub.emergency.ui.screens.ArticleScreen
 import com.codingub.emergency.ui.screens.MainScreen
 import com.codingub.emergency.ui.theme.EmergencyTheme
 import com.exyte.animatednavbar.AnimatedNavigationBar
@@ -38,37 +43,18 @@ import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.utils.noRippleClickable
-
-
-data class BottomNavigationItem(
-    val title: String,
-    val icon: ImageVector,
-    val badge: Boolean = false
-)
+import dagger.hilt.android.AndroidEntryPoint
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             EmergencyTheme(dynamicColor = false) {
-                val items = listOf(
-                    BottomNavigationItem(
-                        title = "Home",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_home)
-                    ),
-                    BottomNavigationItem(
-                        title = "Articles",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_articles),
-                        badge = true
-                    ),
-                    BottomNavigationItem(
-                        title = "Info",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_info)
-                    ),
-                )
+                val navController = rememberNavController()
 
                 val navigationBarItems = remember { NavigationBarItems.values() }
                 var selectedItemIndex by rememberSaveable {
@@ -77,9 +63,8 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+
                     Scaffold(
                         bottomBar = {
                             AnimatedNavigationBar(
@@ -92,16 +77,20 @@ class MainActivity : ComponentActivity() {
                                 ballColor = colorResource(id = R.color.navball_color)
                             ) {
                                 navigationBarItems.forEach { item ->
-                                    Box(modifier = Modifier
-                                        .fillMaxSize()
-                                        .noRippleClickable { selectedItemIndex = item.ordinal },
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .noRippleClickable {
+                                                selectedItemIndex = item.ordinal
+                                                navController.navigate(item.route)
+                                            },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
                                             modifier = Modifier.size(26.dp),
                                             imageVector = ImageVector.vectorResource(item.icon),
                                             contentDescription = "Bottom Bar Icon",
-                                            tint = if(selectedItemIndex == item.ordinal) MaterialTheme.colorScheme.secondary
+                                            tint = if (selectedItemIndex == item.ordinal) MaterialTheme.colorScheme.secondary
                                             else MaterialTheme.colorScheme.inversePrimary
                                         )
                                     }
@@ -109,7 +98,28 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         content = { padding ->
-                            Column(modifier = Modifier.padding(padding)) {}
+                            NavHost(
+                                navController = navController,
+                                startDestination = ARTICLES,
+                                modifier = Modifier.padding(padding)
+                            ) {
+                                composable(route = ARTICLES) {
+                                    ArticleScreen(
+                                        navController = navController
+                                    )
+                                }
+                                composable(route = HOME) {
+                                    MainScreen(
+                                        navController = navController
+                                    )
+                                }
+                                composable(route = INFO) {
+                                    ArticleScreen(
+                                        navController = navController
+                                    )
+                                }
+
+                            }
                         }
                     )
                 }
@@ -119,10 +129,10 @@ class MainActivity : ComponentActivity() {
 }
 
 
-enum class NavigationBarItems(val icon: Int) {
-    Home(icon = R.drawable.ic_home),
-    Articles(icon = R.drawable.ic_articles),
-    Info(icon = R.drawable.ic_info)
+enum class NavigationBarItems(val route: String, val icon: Int) {
+    Home(route = HOME, icon = R.drawable.ic_home),
+    Articles(route = ARTICLES, icon = R.drawable.ic_articles),
+    Info(route = INFO, icon = R.drawable.ic_info)
 }
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
