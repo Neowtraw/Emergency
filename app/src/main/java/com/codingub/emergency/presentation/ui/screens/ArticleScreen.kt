@@ -1,8 +1,7 @@
-package com.codingub.emergency.ui.screens
+package com.codingub.emergency.presentation.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,11 +42,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,27 +57,26 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
-import com.codingub.emergency.common.Constants.MAIN_CONTENT_TEXT
-import com.codingub.emergency.common.Constants.MAIN_CORNER
-import com.codingub.emergency.common.Constants.MAIN_DIVIDER
-import com.codingub.emergency.common.Constants.MAIN_ELEVATION
-import com.codingub.emergency.common.Constants.MAIN_HEADER_TEXT
-import com.codingub.emergency.common.Constants.MAIN_PADDING
 import com.codingub.emergency.domain.models.Article
-import com.codingub.emergency.ui.theme.EmergencyTheme
+import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ELEVATION
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 
 
 @Composable
 fun ArticleScreen(navController: NavController) {
 
-    var textValue : String by remember { mutableStateOf("") }
+    var textValue: String by remember { mutableStateOf("") }
 
     Column(
         Modifier
             .fillMaxSize()
             .padding(MAIN_PADDING.dp)
             .statusBarsPadding()
-            .background(colorResource(id = R.color.background))
     ) {
 
         Search(textValue = textValue,
@@ -95,16 +94,15 @@ fun ArticleScreen(navController: NavController) {
 private fun ArticleGrid(articles: List<Article>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        verticalArrangement = Arrangement.spacedBy(3.dp),
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
+        //    verticalArrangement = Arrangement.spacedBy(5.dp),
+        //    horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         items(articles) { article ->
             ArticleItem(
-                image = "https://www.conic.org.br/portal/images/dim_2023_d.jpg",
+                image = article.imageUrl,
                 title = article.title,
                 summary = article.summary,
-                liked = article.liked,
-                onLikeClick = { /*TODO*/ }) {
+                onLikeClick = { }) {
 
             }
         }
@@ -156,7 +154,7 @@ private fun Search(
             OutlinedTextField(
                 value = textValue,
                 onValueChange = { onTextChange(it) },
-                placeholder = { Text("Search") },
+                placeholder = { Text(stringResource(id = R.string.search)) },
                 maxLines = 1,
                 textStyle = TextStyle(color = colorResource(id = R.color.main_text)),
                 keyboardOptions = KeyboardOptions(
@@ -164,7 +162,7 @@ private fun Search(
                     autoCorrect = true
                 ),
                 visualTransformation = VisualTransformation.None,
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(MAIN_CORNER.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent
@@ -196,18 +194,18 @@ private fun ArticleItem(
     image: String,
     title: String,
     summary: String,
-    liked: Boolean,
+    //liked: Boolean,
     onLikeClick: () -> Unit,
     onCardClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(MAIN_ELEVATION.dp))
-            .padding(3.dp),
+            .padding(10.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = MAIN_ELEVATION.dp
         ),
+        shape = RoundedCornerShape(MAIN_CORNER.dp),
         colors = CardDefaults.cardColors(
             contentColor = colorResource(id = R.color.article_view_content),
             containerColor = colorResource(id = R.color.background)
@@ -217,20 +215,22 @@ private fun ArticleItem(
     ) {
         AsyncImage(
             model = image,
-            contentDescription = null,
+            contentDescription = "Article View",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(50.dp)
+                .weight(1f)
                 .aspectRatio(1280f / 847f)
                 .clip(
                     shape = RoundedCornerShape(
-                        MAIN_ELEVATION.dp,
-                        MAIN_ELEVATION.dp,
+                        MAIN_CORNER.dp,
+                        MAIN_CORNER.dp,
                         0.dp,
                         0.dp
                     )
                 ),
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.FillWidth,
+            error = painterResource(R.drawable.placeholder)
         )
 
         Row(
@@ -268,10 +268,10 @@ private fun ArticleItem(
 
             // Иконка (звездочка)
             Icon(
-                imageVector = if (liked) ImageVector.vectorResource(id = R.drawable.ic_favorite)
+                imageVector = if (true) ImageVector.vectorResource(id = R.drawable.ic_favorite)
                 else ImageVector.vectorResource(id = R.drawable.ic_favorite),
                 contentDescription = null,
-                tint = if (liked) colorResource(id = R.color.article_favorite_view_selected)
+                tint = if (true) colorResource(id = R.color.article_favorite_view_selected)
                 else colorResource(id = R.color.article_favorite_view_unselected),
                 modifier = Modifier
                     .clickable { onLikeClick() }

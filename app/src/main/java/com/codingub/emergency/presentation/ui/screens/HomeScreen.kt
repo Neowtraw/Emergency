@@ -1,4 +1,4 @@
-package com.codingub.emergency.ui.screens
+package com.codingub.emergency.presentation.ui.screens
 
 
 import androidx.compose.foundation.background
@@ -10,13 +10,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.codingub.emergency.R
-import com.codingub.emergency.ui.theme.EmergencyTheme
-import dagger.hilt.android.AndroidEntryPoint
+import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun HomeScreen(navController: NavController) {
     Column(Modifier.background(colorResource(id = R.color.contrast_icons))){
-        Text(text = "heeeeeell")
+        Text(text = "heeee\nee\nll")
 
     }
 }

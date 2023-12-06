@@ -1,4 +1,4 @@
-package com.codingub.emergency.ui.theme
+package com.codingub.emergency.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary =PrimaryLight,
+    primary = PrimaryLight,
     secondary = SecondaryLight,
     tertiary = TetriaryLight,
     background = PrimaryLight

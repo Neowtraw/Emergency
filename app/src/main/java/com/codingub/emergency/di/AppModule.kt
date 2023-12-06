@@ -1,10 +1,22 @@
 package com.codingub.emergency.di
 
+import android.content.Context
+import com.codingub.emergency.data.repos.DataStoreRepository
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideDataStoreRepository(
+        @ApplicationContext context: Context
+    ) = DataStoreRepository(context = context)
+
 }
