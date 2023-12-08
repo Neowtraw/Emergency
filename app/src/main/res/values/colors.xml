@@ -17,7 +17,10 @@
     <color name="article_view_stroke">#3F51B5</color>
 
     <color name="main_text">#201732</color>
+    <color name="add_text">#443660</color>
     <color name="background">#FFFFFF</color>
+
+    <color name="text_input">#50020202</color>
 
     <color name="article_favorite_view_selected">#E68B29</color>
     <color name="article_favorite_view_unselected">#FAA81E</color>

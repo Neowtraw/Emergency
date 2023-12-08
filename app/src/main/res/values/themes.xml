@@ -10,7 +10,7 @@
 
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/placeholder</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.Emergency</item>
     </style>

@@ -71,7 +71,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-
+    // browser
+    implementation("androidx.browser:browser:1.3.0")
+    
     // compose
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.compose.foundation:foundation:1.4.1")

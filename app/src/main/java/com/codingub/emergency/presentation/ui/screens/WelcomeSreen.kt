@@ -1,6 +1,5 @@
 package com.codingub.emergency.presentation.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -15,10 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +39,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.codingub.emergency.R
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
+import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.utils.OnBoardingPage
 import com.codingub.emergency.presentation.ui.viewmodels.WelcomeViewModel
 
@@ -84,12 +81,15 @@ fun WelcomeScreen(
 
         FinishButton(
             modifier = Modifier.weight(1f),
-            pagerState = pagerState
-        ) {
-            welcomeViewModel.saveOnBoardingState(completed = true)
-            navController.popBackStack()
-            navController.navigate(HOME)
-        }
+            visible = {
+                pagerState.currentPage == 2
+            },
+            text = R.string.finish,
+            onClick = {
+                welcomeViewModel.saveOnBoardingState(completed = true)
+                navController.popBackStack()
+                navController.navigate(HOME)
+            })
     }
 }
 
@@ -218,34 +218,6 @@ fun PageIndicator(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun FinishButton(
-    modifier: Modifier,
-    pagerState: PagerState,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 40.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = pagerState.currentPage == 2
-        ) {
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Закончить")
-            }
-        }
-    }
-}
 
 @Composable
 @Preview(showBackground = true)

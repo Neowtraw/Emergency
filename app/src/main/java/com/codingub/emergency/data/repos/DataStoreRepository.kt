@@ -21,9 +21,35 @@ class DataStoreRepository(context: Context) {
     private object PreferencesKey {
         val onBoardingKey = booleanPreferencesKey(name = "on_boarding_completed")
         val onUserKey = stringPreferencesKey(name = "on_user")
+        val onVerificationCodeKey = stringPreferencesKey(name = "on_verification_code")
     }
 
     private val dataStore = context.dataStore
+
+    /*
+        Verification code
+     */
+
+    suspend fun saveVerificationCode(verificationKey: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.onVerificationCodeKey] = verificationKey
+        }
+    }
+
+    fun readOnVerificationCode() : Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if(exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val verificationCode = preferences[PreferencesKey.onVerificationCodeKey] ?: ""
+                verificationCode
+            }
+    }
 
     /*
        User

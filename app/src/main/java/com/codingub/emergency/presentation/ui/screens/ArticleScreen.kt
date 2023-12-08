@@ -61,7 +61,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,12 +70,10 @@ import com.codingub.emergency.R
 import com.codingub.emergency.common.ArticleType
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
-import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
-import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER_ITEMS
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ELEVATION
-import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.codingub.emergency.presentation.ui.utils.ScreenState
 import com.codingub.emergency.presentation.ui.viewmodels.ArticleViewModel
@@ -242,8 +239,8 @@ private fun ArticleItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp)
-            .padding(10.dp),
+            .height(280.dp)
+            .padding(5.dp, 10.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = MAIN_ELEVATION.dp
         ),
@@ -288,7 +285,7 @@ private fun ArticleItem(
                 Text(
                     text = title,
                     style = TextStyle(
-                        fontSize = MAIN_HEADER_TEXT.sp,
+                        fontSize = MAIN_CONTENT_TEXT.sp,
                         fontWeight = FontWeight.Medium,
                         color = colorResource(id = R.color.main_text),
                         textAlign = TextAlign.Center
@@ -296,7 +293,7 @@ private fun ArticleItem(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER_ITEMS.dp))
 
                 Text(
                     text = summary,
@@ -367,14 +364,6 @@ private fun TabbedItem(
                 )
             }
         }
-    }
-}
-
-@Composable
-@Preview(device = "id:pixel_4a", showBackground = true)
-private fun MainScreenPreview() {
-
-    EmergencyTheme {
     }
 }
 

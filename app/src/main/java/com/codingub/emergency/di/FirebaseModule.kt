@@ -1,5 +1,7 @@
 package com.codingub.emergency.di
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -16,4 +18,8 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun providesFireDb() : FirebaseFirestore = Firebase.firestore
+
+    @Provides
+    @Singleton
+    fun providesFireAuth() : FirebaseAuth = Firebase.auth
 }

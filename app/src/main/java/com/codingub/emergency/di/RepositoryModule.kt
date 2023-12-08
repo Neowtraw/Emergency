@@ -5,7 +5,9 @@ import com.codingub.emergency.data.local.datasource.LocalDataSourceImpl
 import com.codingub.emergency.data.remote.datasource.FireDataSource
 import com.codingub.emergency.data.remote.datasource.FireDataSourceImpl
 import com.codingub.emergency.data.repos.AppRepositoryImpl
+import com.codingub.emergency.data.repos.AuthRepositoryImpl
 import com.codingub.emergency.domain.repos.AppRepository
+import com.codingub.emergency.domain.repos.AuthRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,4 +25,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindRepository(repository: AppRepositoryImpl): AppRepository
+
+    @Binds
+    abstract fun bindAuthRepository(repository: AuthRepositoryImpl): AuthRepository
 }

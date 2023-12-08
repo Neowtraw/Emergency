@@ -8,13 +8,17 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +26,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.navigation.NavRoute.INFO
+import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
 import com.codingub.emergency.presentation.navigation.NavRoute.WELCOME
 import com.codingub.emergency.presentation.navigation.setupNavGraph
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
@@ -91,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 when(navBackStackEntry?.destination?.route) {
-                    WELCOME -> bottomBarState.value = false
+                    WELCOME, USER_AUTH -> bottomBarState.value = false
                     ARTICLES, HOME, INFO -> bottomBarState.value = true
                 }
 
@@ -101,7 +109,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         bottomBar = {
-
                             AnimatedVisibility(visible = bottomBarState.value,
                                 enter = slideInVertically(initialOffsetY = {it}),
                                 exit = slideOutVertically(targetOffsetY = {it}),
@@ -145,7 +152,8 @@ class MainActivity : ComponentActivity() {
                             setupNavGraph(
                                 navController = navController,
                                 startDestination = screen,
-                                padding = padding
+                                padding = padding,
+                                activity = this
                             )
                         }
                     )
@@ -156,7 +164,7 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class NavigationBarItems(val route: String, val icon: Int) {
-    Home(route = HOME, icon = R.drawable.ic_home),
+    Home(route = USER_AUTH, icon = R.drawable.ic_home),
     Articles(route = ARTICLES, icon = R.drawable.ic_articles),
     Info(route = INFO, icon = R.drawable.ic_info)
 }
