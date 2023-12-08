@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.codingub.emergency.presentation.ui.screens.ArticleScreen
 import com.codingub.emergency.presentation.ui.screens.HomeScreen
+import com.codingub.emergency.presentation.ui.screens.InfoScreen
 import com.codingub.emergency.presentation.ui.screens.WelcomeScreen
 
 @Composable
@@ -32,7 +33,12 @@ fun setupNavGraph(
             )
         }
         composable(route = NavRoute.INFO) {
-            ArticleScreen(
+            InfoScreen(
+                navController = navController
+            )
+        }
+        composable(route = NavRoute.WELCOME) {
+            WelcomeScreen(
                 navController = navController
             )
         }

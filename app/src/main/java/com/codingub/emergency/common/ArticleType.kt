@@ -1,7 +1,10 @@
 package com.codingub.emergency.common
 
-enum class ArticleType {
-    ACCIDENTS,
-    ILLNESSES,
-    WEATHER
+import androidx.annotation.StringRes
+import com.codingub.emergency.R
+
+enum class ArticleType(@StringRes val title: Int) {
+    ACCIDENTS(R.string.accidents),
+    ILLNESSES(R.string.illness),
+    WEATHER(R.string.weather)
 }

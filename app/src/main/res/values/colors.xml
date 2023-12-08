@@ -24,4 +24,7 @@
 
     <color name="contrast">#8295B6</color>
     <color name="contrast_icons">#8295B6</color>
+
+    <color name="call">#78AB67</color>
+    <color name="call_icon">#FFFFFF</color>
 </resources>

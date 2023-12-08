@@ -2,4 +2,30 @@
     <string name="app_name">Emergency</string>
 
     <string name="search">search</string>
+
+    <string name="accidents">Инциденты</string>
+    <string name="illness">Болезни</string>
+    <string name="weather">Погода</string>
+
+    <string name="emergency_service">Вызовы экстренных служб</string>
+    <string name="user_statistic">Ваши данные:</string>
+    <string name="user_gps">Ваше местоположение:</string>
+
+    <!-- Emergency services START -->
+    <string name="mes">МЧС (Экстренный вызов)</string>
+    <string name="police">Полиция</string>
+    <string name="fire_department">Пожарная служба</string>
+    <string name="ambulance">Скорая помощь</string>
+    <string name="gas_service">Служба газа</string>
+
+    <string name="phone_mes">112</string>
+    <string name="phone_police">102</string>
+    <string name="phone_fire_department">101</string>
+    <string name="phone_ambulacne">103</string>
+    <string name="phone_gas_service">104</string>
+
+    <!-- Emergency services END -->
+
+
+
 </resources>

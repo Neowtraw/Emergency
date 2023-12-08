@@ -2,6 +2,7 @@ package com.codingub.emergency.presentation.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,19 +33,24 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,13 +60,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
+import com.codingub.emergency.common.ArticleType
+import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
@@ -65,12 +78,32 @@ import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ELEVATION
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
+import com.codingub.emergency.presentation.ui.utils.ScreenState
+import com.codingub.emergency.presentation.ui.viewmodels.ArticleViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
-fun ArticleScreen(navController: NavController) {
+fun ArticleScreen(
+    navController: NavController,
+    articleViewModel: ArticleViewModel = hiltViewModel()
+) {
 
+    val context = LocalContext.current
     var textValue: String by remember { mutableStateOf("") }
+    var screenState by remember { mutableStateOf<ScreenState<List<Article>>>(ScreenState.Loading) }
+
+
+    LaunchedEffect(articleViewModel, context) {
+        articleViewModel.articles.collectLatest { result ->
+            when (result) {
+                is ResultState.Loading -> screenState = ScreenState.Loading
+                is ResultState.Success -> screenState = ScreenState.Success(data = result.data!!)
+                is ResultState.Error -> screenState =
+                    ScreenState.Error(error = result.error ?: Throwable())
+            }
+        }
+    }
 
     Column(
         Modifier
@@ -85,24 +118,32 @@ fun ArticleScreen(navController: NavController) {
             }, onIconClicked = {})
         Spacer(modifier = Modifier.height(20.dp))
 
-        ArticleGrid(articles = listOf(Article(), Article(), Article(), Article()))
+
+        TabbedItem()
+        when (screenState) {
+            ScreenState.Loading -> {}
+            is ScreenState.Success -> {
+                ArticleGrid(articles = articleViewModel.articles.collectAsState().value.data!!) { }
+            }
+
+            is ScreenState.Error -> {}
+        }
+
     }
 }
 
 
 @Composable
-private fun ArticleGrid(articles: List<Article>) {
+private fun ArticleGrid(articles: List<Article>, onLikeClick: () -> Unit) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
-        //    verticalArrangement = Arrangement.spacedBy(5.dp),
-        //    horizontalArrangement = Arrangement.spacedBy(5.dp),
+        columns = GridCells.Fixed(1)
     ) {
         items(articles) { article ->
             ArticleItem(
                 image = article.imageUrl,
                 title = article.title,
                 summary = article.summary,
-                onLikeClick = { }) {
+                onLikeClick = { onLikeClick() }) {
 
             }
         }
@@ -121,7 +162,7 @@ private fun Search(
 ) {
     Box(
         Modifier
-            .padding(MAIN_PADDING.dp)
+            .padding(5.dp)
             .fillMaxWidth()
             .height(50.dp)
     ) {
@@ -201,6 +242,7 @@ private fun ArticleItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(260.dp)
             .padding(10.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = MAIN_ELEVATION.dp
@@ -213,13 +255,13 @@ private fun ArticleItem(
         border = BorderStroke(1.dp, colorResource(id = R.color.article_view_stroke)),
         onClick = onCardClick
     ) {
+
         AsyncImage(
             model = image,
             contentDescription = "Article View",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
-                .weight(1f)
+                .height(150.dp)
                 .aspectRatio(1280f / 847f)
                 .clip(
                     shape = RoundedCornerShape(
@@ -234,7 +276,9 @@ private fun ArticleItem(
         )
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.background(Color.White)
+
         ) {
             Column(
                 modifier = Modifier
@@ -282,13 +326,55 @@ private fun ArticleItem(
     }
 }
 
+@Composable
+private fun TabbedItem(
+    modifier: Modifier = Modifier
+) {
+    val tabTitles = ArticleType.values()
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+
+    Column(modifier = modifier) {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            backgroundColor = Color.White,
+            contentColor = colorResource(id = R.color.navbar_unselected),
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .shadow(4.dp),
+                    color = colorResource(id = R.color.contrast_icons)
+                )
+            }
+        ) {
+            tabTitles.forEachIndexed { index, element ->
+                Tab(
+                    text = {
+                        Text(
+                            text = stringResource(id = element.title),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 13.sp
+                        )
+                    },
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    modifier = Modifier
+                    //  .padding(10.dp)
+                    // .shadow(elevation = 3.dp)
+                    // .clip(RoundedCornerShape(MAIN_CORNER.dp))
+
+                )
+            }
+        }
+    }
+}
 
 @Composable
 @Preview(device = "id:pixel_4a", showBackground = true)
 private fun MainScreenPreview() {
 
     EmergencyTheme {
-        ArticleScreen(navController = rememberNavController())
     }
 }
 

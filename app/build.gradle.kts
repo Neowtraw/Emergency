@@ -118,6 +118,9 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
 
+    // motion layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
 }
 
 kapt {

@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface FireDataSource {
-    fun getArticles() : Flow<ResultState<List<Article>>>
-    fun searchArticles(alt: String) : Flow<ResultState<List<Article>>>
+    suspend fun getArticles() : List<Article>
+    suspend fun searchArticles(alt: String) : List<Article>
 }
