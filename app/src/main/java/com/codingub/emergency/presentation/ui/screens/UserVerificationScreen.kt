@@ -54,10 +54,15 @@ fun UserVerificationScreen(
             HeaderText(text = R.string.your_phone_number)
             Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
             AddAuthText(text = R.string.verification_code_request)
-            OtpView(otpText = otp) {
+            Spacer(modifier = Modifier.height(50.dp))
+
+            OtpView(modifier =  Modifier
+
+                ,otpText = otp) {
                 otp = it
             }
-            FinishButton(modifier = Modifier.fillMaxWidth(),
+            FinishButton(modifier = Modifier.fillMaxWidth()
+                .padding(top = 50.dp),
                 text = R.string.finish,
                 visible = { otp.count() == 6 },
                 onClick = {

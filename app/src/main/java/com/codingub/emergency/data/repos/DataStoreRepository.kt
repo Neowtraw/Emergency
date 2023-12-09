@@ -9,6 +9,8 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.firestore.auth.User
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -36,10 +38,10 @@ class DataStoreRepository(context: Context) {
         }
     }
 
-    fun readOnVerificationCode() : Flow<String> {
+    fun readOnVerificationCode(): Flow<String> {
         return dataStore.data
             .catch { exception ->
-                if(exception is IOException) {
+                if (exception is IOException) {
                     emit(emptyPreferences())
                 } else {
                     throw exception
@@ -56,12 +58,22 @@ class DataStoreRepository(context: Context) {
     */
 
     suspend fun saveUserInfo(user: User) {
-        dataStore.edit {
-
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.onUserKey] = Gson().toJson(user)
         }
     }
 
-   // fun readUserInfo() : Flow<User>{}
+    fun readUserInfo(): Flow<User?> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) emit(emptyPreferences())
+                else throw exception
+            }
+            .map { preferences ->
+                val user = preferences[PreferencesKey.onUserKey]
+                Gson().fromJson(user, object : TypeToken<User>() {}.type)
+            }
+    }
 
     /*
         OnBoarding
@@ -72,10 +84,10 @@ class DataStoreRepository(context: Context) {
         }
     }
 
-    fun readOnBoardingState() : Flow<Boolean> {
+    fun readOnBoardingState(): Flow<Boolean> {
         return dataStore.data
             .catch { exception ->
-                if(exception is IOException) {
+                if (exception is IOException) {
                     emit(emptyPreferences())
                 } else {
                     throw exception

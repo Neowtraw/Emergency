@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
 
     fun createUserWithPhone(
+        code: String,
         phone: String,
         activity: Activity
     ) : Flow<ResultState<String>>

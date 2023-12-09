@@ -3,6 +3,7 @@
 
     <string name="search">search</string>
     <string name="phone_number">Phone Number</string>
+    <string name="country_code">Country</string>
     <string name="your_phone_number">Ваш номер</string>
     <string name="your_phone_number_add">Пожалуйста определите код вашей страны и введите телефонный номер</string>
 
@@ -32,6 +33,14 @@
     <string name="phone_gas_service">104</string>
 
     <!-- Emergency services END -->
+
+    <!-- Countries START -->
+
+    <string name="code_belarus">+375</string>
+    <string name="code_russia">+7</string>
+    <string name="code_poland">+48</string>
+
+    <!-- Countries END -->
 
 
 

@@ -123,6 +123,9 @@ dependencies {
     // motion layout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
+    // gson
+    implementation("com.google.code.gson:gson:2.10.1")
+
 }
 
 kapt {

@@ -12,9 +12,10 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel(){
 
     fun createUserWithPhone(
+        code: String,
         phoneNumber: String,
         activity: Activity
-    ) = repository.createUserWithPhone(phoneNumber, activity)
+    ) = repository.createUserWithPhone(code, phoneNumber, activity)
 
     fun signInWithCredential(
         code: String

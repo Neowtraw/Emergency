@@ -13,8 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -26,7 +24,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     private lateinit var omVerificationCode: String
 
-    override fun createUserWithPhone(phone: String, activity: Activity): Flow<ResultState<String>> =
+    override fun createUserWithPhone(code: String,phone: String, activity: Activity): Flow<ResultState<String>> =
         callbackFlow {
             trySend(ResultState.Loading())
 
@@ -51,7 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
                 }
 
             val options = PhoneAuthOptions.newBuilder(db)
-                .setPhoneNumber("+375$phone")
+                .setPhoneNumber("$code$phone")
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setActivity(activity)
                 .setCallbacks(onVerificationCallback)
