@@ -12,20 +12,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.codingub.emergency.R
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.utils.Constants
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 
 @Composable
 fun HomeScreen(navController: NavController) {
     Column(
         Modifier
+            .background(getBackgroundBrush())
             .padding(
-                Constants.MAIN_PADDING.dp, 60.dp,
-                Constants.MAIN_PADDING.dp,
-                Constants.MAIN_PADDING.dp
+                top = 60.dp,
             )
+            .padding(horizontal = MAIN_PADDING.dp)
     ) {
-        Text(text = "heeee\nee\nll")
 
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.codingub.emergency.R
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.ui.customs.FinishButton
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.utils.OnBoardingPage
 import com.codingub.emergency.presentation.ui.viewmodels.WelcomeViewModel
 
@@ -57,7 +59,9 @@ fun WelcomeScreen(
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(getBackgroundBrush()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

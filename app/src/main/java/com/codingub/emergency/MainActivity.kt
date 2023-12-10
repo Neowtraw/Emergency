@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -56,6 +57,7 @@ import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.navigation.NavRoute.INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
+import com.codingub.emergency.presentation.navigation.NavRoute.USER_INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.WELCOME
 import com.codingub.emergency.presentation.navigation.setupNavGraph
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 when(navBackStackEntry?.destination?.route) {
-                    WELCOME, USER_AUTH -> bottomBarState.value = false
+                    WELCOME, USER_AUTH, USER_INFO -> bottomBarState.value = false
                     ARTICLES, HOME, INFO -> bottomBarState.value = true
                 }
 
@@ -115,7 +117,11 @@ class MainActivity : ComponentActivity() {
                                 content = {
 
                                     AnimatedNavigationBar(
-                                        modifier = Modifier.height(64.dp),
+                                        modifier = Modifier
+                                            .height(64.dp)
+                                            .background(
+                                                colorResource(id = R.color.background_second)
+                                            ),
                                         selectedIndex = selectedItemIndex,
                                         cornerRadius = shapeCornerRadius(cornerRadius = 34.dp),
                                         ballAnimation = Parabolic(tween(300)),
@@ -164,7 +170,7 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class NavigationBarItems(val route: String, val icon: Int) {
-    Home(route = USER_AUTH, icon = R.drawable.ic_home),
+    Home(route = USER_INFO, icon = R.drawable.ic_home),
     Articles(route = ARTICLES, icon = R.drawable.ic_articles),
     Info(route = INFO, icon = R.drawable.ic_info)
 }

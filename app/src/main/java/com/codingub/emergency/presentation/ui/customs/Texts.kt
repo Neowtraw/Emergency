@@ -35,7 +35,7 @@ fun AddAuthText(
     Text(
         modifier = Modifier
             .fillMaxWidth(),
-        text = stringResource(id = R.string.your_phone_number_add),
+        text = stringResource(id = text),
         fontWeight = FontWeight.Medium,
         color = colorResource(id = R.color.add_text),
         textAlign = TextAlign.Center,

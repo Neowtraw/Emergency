@@ -70,6 +70,7 @@ import com.codingub.emergency.R
 import com.codingub.emergency.common.ArticleType
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER_ITEMS
@@ -105,7 +106,9 @@ fun ArticleScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .padding(MAIN_PADDING.dp)
+            .background(getBackgroundBrush())
+            .padding(top = 60.dp)
+            .padding(horizontal = MAIN_PADDING.dp)
             .statusBarsPadding()
     ) {
 

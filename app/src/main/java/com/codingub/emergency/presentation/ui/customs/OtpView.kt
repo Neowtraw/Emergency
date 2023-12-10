@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-const val OTP_VIEW_TYPE_NONE = 0
 const val OTP_VIEW_TYPE_UNDERLINE = 1
 const val OTP_VIEW_TYPE_BORDER = 2
 

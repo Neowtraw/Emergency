@@ -1,8 +1,10 @@
 package com.codingub.emergency.domain.models
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import com.codingub.emergency.R
 
+@Immutable
 enum class Call(@StringRes val title: Int, @StringRes val phone: Int) {
     MES(R.string.mes, R.string.phone_mes),
     POLICE(R.string.police, R.string.phone_police),

@@ -56,6 +56,7 @@ import com.codingub.emergency.presentation.navigation.NavRoute.USER_VERIFICATION
 import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.HeaderText
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
@@ -88,12 +89,14 @@ fun UserAuthScreen(
             .background(
                 color = colorResource(id = R.color.background)
             )
+            .background(getBackgroundBrush())
             .padding(MAIN_PADDING.dp)
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(getBackgroundBrush())
                 .padding(MAIN_PADDING.dp)
                 .verticalScroll(rememberScrollState(), reverseScrolling = true),
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -11,10 +11,9 @@ import com.codingub.emergency.presentation.ui.screens.ArticleScreen
 import com.codingub.emergency.presentation.ui.screens.HomeScreen
 import com.codingub.emergency.presentation.ui.screens.InfoScreen
 import com.codingub.emergency.presentation.ui.screens.UserAuthScreen
-import com.codingub.emergency.presentation.ui.screens.UserInfoScreen
+import com.codingub.emergency.presentation.ui.screens.info.UserInfoScreen
 import com.codingub.emergency.presentation.ui.screens.UserVerificationScreen
 import com.codingub.emergency.presentation.ui.screens.WelcomeScreen
-import com.google.firebase.auth.UserInfo
 
 @Composable
 fun setupNavGraph(

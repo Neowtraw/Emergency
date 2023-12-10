@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codingub.emergency.R
 import com.codingub.emergency.domain.models.Call
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
@@ -47,7 +49,10 @@ fun InfoScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(MAIN_PADDING.dp,60.dp,MAIN_PADDING.dp,MAIN_PADDING.dp)
+            .fillMaxSize()
+            .background(getBackgroundBrush())
+            .padding(top = 60.dp)
+            .padding(horizontal = MAIN_PADDING.dp)
 
     ) {
         Text(text = stringResource(id = R.string.emergency_service),
@@ -108,7 +113,7 @@ private fun PhoneItem(
         Box(
             modifier = Modifier
                 .size(40.dp)
-              //  .shadow(MAIN_ELEVATION.dp)
+                //  .shadow(MAIN_ELEVATION.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(colorResource(id = R.color.call))
                 .clickable { onIconClicked() },

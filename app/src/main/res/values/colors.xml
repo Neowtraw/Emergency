@@ -9,15 +9,16 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="navbar_color">#F0F0F8</color>
-    <color name="navball_color">#C7D7F3</color>
+    <color name="navball_color">#144A60</color>
     <color name="navbar_unselected">#929298</color>
     <color name="navbar_selected">#6853D8</color>
 
     <color name="article_view_content">#3F51B5</color>
     <color name="article_view_stroke">#3F51B5</color>
 
-    <color name="main_text">#201732</color>
-    <color name="add_text">#443660</color>
+    <color name="main_text">#144A60</color>
+    <color name="add_text">#36728A</color>
+    <color name="error_text">#AB2539</color>
     <color name="background">#FFFFFF</color>
 
     <color name="text_input">#50020202</color>
@@ -27,6 +28,11 @@
 
     <color name="contrast">#8295B6</color>
     <color name="contrast_icons">#8295B6</color>
+
+    <color name="background_first">#FFFFFF</color>
+    <color name="background_second">#D4E0F3</color>
+
+    <color name="text_field_outline">#3F51B5</color>
 
     <color name="call">#78AB67</color>
     <color name="call_icon">#FFFFFF</color>

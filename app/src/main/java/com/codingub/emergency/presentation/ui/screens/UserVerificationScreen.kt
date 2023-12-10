@@ -1,6 +1,7 @@
 package com.codingub.emergency.presentation.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.HeaderText
 import com.codingub.emergency.presentation.ui.customs.OtpView
+import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +45,7 @@ fun UserVerificationScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(getBackgroundBrush())
             .padding(horizontal = 20.dp),
         contentAlignment = Alignment.Center
     ) {

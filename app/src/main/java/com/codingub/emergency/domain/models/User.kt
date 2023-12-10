@@ -1,5 +1,8 @@
 package com.codingub.emergency.domain.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class User(
     val username: String = "",
     val phone: String = "",
