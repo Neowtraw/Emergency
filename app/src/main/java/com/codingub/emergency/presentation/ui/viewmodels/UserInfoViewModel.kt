@@ -4,24 +4,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.codingub.emergency.domain.use_cases.SetUserInformation
 import com.codingub.emergency.domain.use_cases.validation.ValidateBirthday
 import com.codingub.emergency.domain.use_cases.validation.ValidateGeneral
 import com.codingub.emergency.domain.use_cases.validation.ValidateParentNumber
 import com.codingub.emergency.presentation.ui.screens.info.UserInfoEvent
 import com.codingub.emergency.presentation.ui.screens.info.UserInfoState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.Period
 import javax.inject.Inject
 
-
-class UserInfoViewModel(
-    private val validateGeneral: ValidateGeneral = ValidateGeneral(),
-    private val validateParentNumber: ValidateParentNumber = ValidateParentNumber(),
-    private val validateBirthday: ValidateBirthday = ValidateBirthday()
+@HiltViewModel
+class UserInfoViewModel @Inject constructor(
+    private val setUserInformation: SetUserInformation,
+    private val validateGeneral: ValidateGeneral,
+    private val validateParentNumber: ValidateParentNumber,
+    private val validateBirthday: ValidateBirthday
 ) : ViewModel() {
 
     var state by mutableStateOf(UserInfoState())
@@ -29,11 +34,12 @@ class UserInfoViewModel(
     private val validationChannel = Channel<ValidationEvent>()
     val validationEvents = validationChannel.receiveAsFlow()
 
-    fun onEvent(event: UserInfoEvent){
-        when(event) {
+    fun onEvent(event: UserInfoEvent) {
+        when (event) {
             is UserInfoEvent.UsernameChanged -> {
                 state = state.copy(username = event.username)
             }
+
             is UserInfoEvent.BirthdayChanged -> {
                 state = state.copy(birthday = event.birthday)
             }
@@ -41,9 +47,11 @@ class UserInfoViewModel(
             is UserInfoEvent.AddressChanged -> {
                 state = state.copy(address = event.address)
             }
+
             is UserInfoEvent.ParentPhoneChanged -> {
                 state = state.copy(parentNumber = event.phone)
             }
+
             is UserInfoEvent.Submit -> {
                 submitData()
             }
@@ -55,11 +63,11 @@ class UserInfoViewModel(
         var age = -1
 
         val formattedDate = state.birthday.getFormattedDate()
-        if(formattedDate != null) {
+        if (formattedDate != null) {
             val (day, month, year) = formattedDate
             isDateValid = isDateValid(day, month, year)
 
-            if(isDateValid){
+            if (isDateValid) {
                 age = getAge(year, month, day)
             }
         }
@@ -76,7 +84,7 @@ class UserInfoViewModel(
             parentNumberResult
         ).any { !it.successful }
 
-        if(hasError) {
+        if (hasError) {
             state = state.copy(
                 usernameError = userResult.errorMessage,
                 birthdayError = birthdayResult.errorMessage,
@@ -85,10 +93,19 @@ class UserInfoViewModel(
             )
             return
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            setUserInformation(
+                username = state.username,
+                address = state.address,
+                parentPhone = state.parentNumber.ifBlank { null },
+                age = age
+            )
+        }
     }
 
     sealed class ValidationEvent {
-        object Success: ValidationEvent()
+        object Success : ValidationEvent()
     }
 }
 
@@ -103,7 +120,7 @@ fun isDateValid(day: Int, month: Int, year: Int): Boolean {
 }
 
 fun String.getFormattedDate(): Triple<Int, Int, Int>? {
-    if(this.length < 8 || this.length > 8) return null
+    if (this.length < 8 || this.length > 8) return null
     val day = this.substring(0, 2).toIntOrNull() ?: 1
     val month = this.substring(2, 4).toIntOrNull() ?: 1
     val year = this.substring(4, 8).toIntOrNull() ?: 2023

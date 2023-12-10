@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 data class User(
     val username: String = "",
     val phone: String = "",
-    val address: String = "",
     val age: Int = -1,
+    val address: String = "",
     val parentNumber: String? = null
 )

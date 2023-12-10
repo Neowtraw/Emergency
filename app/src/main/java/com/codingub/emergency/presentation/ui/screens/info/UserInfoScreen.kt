@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.codingub.emergency.R
@@ -55,10 +56,9 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun UserInfoScreen(
-    navController: NavController
+    navController: NavController,
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
-
-    val userInfoViewModel = viewModel<UserInfoViewModel>()
 
 
     val state = userInfoViewModel.state
@@ -106,7 +106,9 @@ fun UserInfoScreen(
         }
         UserText(
             str = state.username, label = "Username",
-            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Text),
+            maxLines = 1,
+            maxLength = 40
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.UsernameChanged(it))
         }
@@ -120,7 +122,9 @@ fun UserInfoScreen(
         }
         UserText(
             str = state.address, label = "Address",
-            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Text),
+            maxLines = 3,
+            maxLength = 100
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.AddressChanged(it))
         }
@@ -148,7 +152,9 @@ fun UserInfoScreen(
         }
         UserText(
             str = state.parentNumber, label = "Parent Phone",
-            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Phone)
+            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Phone),
+            maxLines = 1,
+            maxLength = 11
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.ParentPhoneChanged(it))
         }
@@ -182,7 +188,7 @@ fun BirthdayView(
         modifier = modifier,
         value = birthday,
         onValueChange = {
-            onTextChange.invoke(it)
+            onTextChange.invoke(it.take(8))
 
         },
         enabled = enabled,
@@ -216,7 +222,7 @@ fun CellView(
     index: Array<Int>,
     text: String,
     charSize: TextUnit = 20.sp,
-    size: Int = 2,
+    size: Int = 2
 ) {
     Column(
         modifier = modifier
@@ -237,7 +243,7 @@ fun CellView(
                 if (index[i] >= text.length) append("")
                 else append(text[index[i]])
             }
-        }
+        } //with max text line
         Text(
             text = str,
             color = colorResource(id = R.color.main_text),
@@ -256,6 +262,8 @@ fun UserText(
     str: String,
     label: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    maxLength : Int = 0,
+    maxLines: Int = 1,
     onTextChange: (String) -> Unit
 ) {
     OutlinedTextField(value = str,
@@ -271,7 +279,9 @@ fun UserText(
             unfocusedBorderColor = colorResource(id = R.color.text_field_outline)
         ),
         onValueChange = {
-            onTextChange(it)
-        }
-    )
+                onTextChange(it.take(maxLength))
+
+        },
+        maxLines = maxLines
+        )
 }

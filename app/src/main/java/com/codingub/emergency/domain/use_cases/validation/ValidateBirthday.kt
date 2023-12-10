@@ -1,6 +1,8 @@
 package com.codingub.emergency.domain.use_cases.validation
 
-class ValidateBirthday {
+import javax.inject.Inject
+
+class ValidateBirthday @Inject constructor() {
     fun execute(isDateValid: Boolean): ValidationResult {
 
         return if (!isDateValid) {

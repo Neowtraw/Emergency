@@ -1,9 +1,9 @@
 package com.codingub.emergency.domain.use_cases.validation
 
-import android.util.Log
+import javax.inject.Inject
 
 
-class ValidateGeneral {
+class ValidateGeneral @Inject constructor(){
     fun execute(str: String) : ValidationResult {
         if(str.isBlank()) {
             return ValidationResult(
