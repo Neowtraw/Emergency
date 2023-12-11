@@ -30,11 +30,3 @@ fun HomeScreen(navController: NavController) {
 
     }
 }
-
-
-@Composable
-@Preview(device = "id:pixel_4a", showBackground = true, backgroundColor = 0xFF3A2F6E)
-private fun MainScreenPreview() {
-    EmergencyTheme {
-    }
-}

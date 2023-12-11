@@ -7,7 +7,7 @@
     <string name="your_phone_number">Ваш номер</string>
     <string name="your_phone_number_add">Пожалуйста определите код вашей страны и введите телефонный номер</string>
 
-    <string name="authorization">Отлично! Остался последний шаг</string>
+    <string name="authorization">Отлично!\n Остался последний шаг</string>
     <string name="authorization_add">Укажи информацию о себе, которая поможет тебе в случае попадания в экстренную ситуацию</string>
 
     <string name="verification_code_request">Пожалуйста введите верификационный код</string>

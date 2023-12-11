@@ -22,8 +22,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -95,10 +93,10 @@ fun UserAuthScreen(
 
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState(), reverseScrolling = true)
                 .fillMaxSize()
                 .background(getBackgroundBrush())
-                .padding(MAIN_PADDING.dp)
-                .verticalScroll(rememberScrollState(), reverseScrolling = true),
+                .padding(MAIN_PADDING.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -117,8 +115,10 @@ fun UserAuthScreen(
                 phoneNumber = it
             }
             Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-            CountryDropDownMenu(code) {code = it
-            mask = "${code.code} (00) 000 00 00"}
+            CountryDropDownMenu(code) {
+                code = it
+                mask = "${code.code} (00) 000 00 00"
+            }
             Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
             FinishButton(
@@ -177,7 +177,7 @@ fun CountryDropDownMenu(
             isExpended = it
         }) {
         OutlinedTextField(
-            value =  code.code, onValueChange = {},
+            value = code.code, onValueChange = {},
             readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpended)
@@ -214,7 +214,7 @@ fun CountryDropDownMenu(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(20.dp),
                             verticalAlignment = CenterVertically
-                        ){
+                        ) {
                             Image(
                                 painter = painterResource(id = country.flag),
                                 contentDescription = "Country Flag"

@@ -170,7 +170,7 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class NavigationBarItems(val route: String, val icon: Int) {
-    Home(route = USER_INFO, icon = R.drawable.ic_home),
+    Home(route = HOME, icon = R.drawable.ic_home),
     Articles(route = ARTICLES, icon = R.drawable.ic_articles),
     Info(route = INFO, icon = R.drawable.ic_info)
 }

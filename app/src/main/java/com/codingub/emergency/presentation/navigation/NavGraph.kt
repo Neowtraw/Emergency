@@ -4,16 +4,25 @@ import android.app.Activity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import com.codingub.emergency.presentation.ui.screens.ArticleInfoScreen
 import com.codingub.emergency.presentation.ui.screens.ArticleScreen
 import com.codingub.emergency.presentation.ui.screens.HomeScreen
 import com.codingub.emergency.presentation.ui.screens.InfoScreen
 import com.codingub.emergency.presentation.ui.screens.UserAuthScreen
-import com.codingub.emergency.presentation.ui.screens.info.UserInfoScreen
 import com.codingub.emergency.presentation.ui.screens.UserVerificationScreen
 import com.codingub.emergency.presentation.ui.screens.WelcomeScreen
+import com.codingub.emergency.presentation.ui.screens.info.UserInfoScreen
+import com.codingub.emergency.presentation.ui.viewmodels.SharedViewModel
 
 @Composable
 fun setupNavGraph(
@@ -27,11 +36,6 @@ fun setupNavGraph(
         startDestination = startDestination,
         modifier = androidx.compose.ui.Modifier.padding(padding)
     ) {
-        composable(route = NavRoute.ARTICLES) {
-            ArticleScreen(
-                navController = navController
-            )
-        }
         composable(route = NavRoute.HOME) {
             HomeScreen(
                 navController = navController
@@ -65,8 +69,50 @@ fun setupNavGraph(
         }
         composable(route = NavRoute.USER_VERIFICATION) {
             UserVerificationScreen(
-                navController = navController)
+                navController = navController
+            )
+        }
+
+        navigation(
+            startDestination = NavRoute.ARTICLES,
+            route = NavRoute.ARTICLE_BOARDING
+        ) {
+
+            composable(route = NavRoute.ARTICLE_INFO) { entry ->
+                val viewModel =
+                    entry.sharedViewModel<SharedViewModel>(navController = navController)
+                val state by viewModel.sharedState.collectAsStateWithLifecycle()
+
+                ArticleInfoScreen(
+                    navController = navController,
+                    article = state
+                )
+
+            }
+
+            composable(route = NavRoute.ARTICLES) { entry ->
+                val viewModel =
+                    entry.sharedViewModel<SharedViewModel>(navController = navController)
+               // val state by viewModel.sharedState.collectAsStateWithLifecycle()
+
+                ArticleScreen(
+                    onArticleClicked = {
+                        viewModel.updateState(article = it)
+                        navController.navigate(NavRoute.ARTICLE_INFO)
+                    }
+                )
+            }
         }
     }
+}
 
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
+    navController: NavHostController,
+): T {
+    val navGraphRoute = destination.parent?.route ?: return viewModel()
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry(navGraphRoute)
+    }
+    return viewModel(parentEntry)
 }

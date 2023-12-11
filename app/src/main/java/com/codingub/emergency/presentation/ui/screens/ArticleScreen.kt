@@ -64,7 +64,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
 import com.codingub.emergency.common.ArticleType
@@ -83,7 +82,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ArticleScreen(
-    navController: NavController,
+    onArticleClicked: (Article) -> Unit,
     articleViewModel: ArticleViewModel = hiltViewModel()
 ) {
 
@@ -123,7 +122,12 @@ fun ArticleScreen(
         when (screenState) {
             ScreenState.Loading -> {}
             is ScreenState.Success -> {
-                ArticleGrid(articles = articleViewModel.articles.collectAsState().value.data!!) { }
+                ArticleGrid(
+                    articles = articleViewModel.articles.collectAsState().value.data!!,
+                    onLikeClick = {},
+                    onCardClick = {
+                        onArticleClicked(it)
+                    })
             }
 
             is ScreenState.Error -> {}
@@ -134,7 +138,11 @@ fun ArticleScreen(
 
 
 @Composable
-private fun ArticleGrid(articles: List<Article>, onLikeClick: () -> Unit) {
+private fun ArticleGrid(
+    articles: List<Article>,
+    onLikeClick: () -> Unit,
+    onCardClick: (Article) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1)
     ) {
@@ -143,9 +151,8 @@ private fun ArticleGrid(articles: List<Article>, onLikeClick: () -> Unit) {
                 image = article.imageUrl,
                 title = article.title,
                 summary = article.summary,
-                onLikeClick = { onLikeClick() }) {
-
-            }
+                onCardClick = { onCardClick(article) },
+                onLikeClick = { onLikeClick() })
         }
 
     }

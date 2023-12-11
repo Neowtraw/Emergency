@@ -71,12 +71,15 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    // lifecycle
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0-rc01")
+
     // browser
-    implementation("androidx.browser:browser:1.3.0")
+    implementation("androidx.browser:browser:1.7.0")
     
     // compose
     implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.compose.foundation:foundation:1.4.1")
+    implementation("androidx.compose.foundation:foundation:1.5.4")
 
     // firebase
     implementation("com.google.firebase:firebase-storage:20.3.0")
@@ -125,6 +128,13 @@ dependencies {
 
     // gson
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // exoplayer
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-beta02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
 }
 

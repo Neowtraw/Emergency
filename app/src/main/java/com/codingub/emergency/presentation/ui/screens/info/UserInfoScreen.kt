@@ -77,12 +77,12 @@ fun UserInfoScreen(
 
     Column(
         modifier = Modifier
+            .verticalScroll(rememberScrollState(), reverseScrolling = true)
             .fillMaxSize()
             .background(brush = getBackgroundBrush())
             .statusBarsPadding()
             .padding(horizontal = 30.dp)
-            .padding(top = 60.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(top = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
