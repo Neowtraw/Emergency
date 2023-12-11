@@ -43,6 +43,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.codingub.emergency.R
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
+import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.HeaderText
@@ -67,7 +69,7 @@ fun UserInfoScreen(
         userInfoViewModel.validationEvents.collectLatest { event ->
             when (event) {
                 is UserInfoViewModel.ValidationEvent.Success -> {
-
+                    navController.navigate(HOME)
                 }
             }
         }

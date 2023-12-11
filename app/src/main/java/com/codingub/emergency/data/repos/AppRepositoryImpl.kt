@@ -1,17 +1,16 @@
 package com.codingub.emergency.data.repos
 
-import android.util.Log
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.data.local.datasource.LocalDataSource
 import com.codingub.emergency.data.remote.datasource.FireDataSource
 import com.codingub.emergency.data.utils.NetworkBoundResultState
 import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.domain.models.Service
 import com.codingub.emergency.domain.repos.AppRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
@@ -25,7 +24,7 @@ class AppRepositoryImpl @Inject constructor(
 
     override fun getArticles(): Flow<ResultState<List<Article>>> = NetworkBoundResultState(
         query = {
-           localDataSource.getAllArticles()
+            localDataSource.getAllArticles()
         },
         shouldFetch = {
             it.isNullOrEmpty()
@@ -62,4 +61,23 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun isFavoriteArticle(id: String): Boolean =
         localDataSource.isFavoriteArticle(id)
 
+    override fun getServicesFromLanguage(language: String): Flow<ResultState<List<Service>>> =
+        NetworkBoundResultState(
+            query = {
+                localDataSource.getSavedServices()
+            },
+            shouldFetch = {
+                it.isNullOrEmpty() || it.none { service -> service.language == language }
+            },
+            fetch = {
+                fireDataSource.getServicesFromLanguage(language = language)
+            },
+            saveFetchResult = {
+                localDataSource.insertServices(services = it)
+            },
+            onFetchFailed = {
+
+            },
+            dispatcher = dispatcher
+        )
 }

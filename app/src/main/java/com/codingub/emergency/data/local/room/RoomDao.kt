@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.codingub.emergency.data.local.models.ArticleEntity
 import com.codingub.emergency.data.local.models.FavoriteArticleEntity
+import com.codingub.emergency.data.local.models.ServiceEntity
+import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -41,4 +43,16 @@ interface RoomDao  {
 
     @Query("DELETE FROM FavoriteArticle WHERE id = :articleId")
     suspend fun deleteFavoriteArticle(articleId: String)
+
+    /*
+        Service
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertServices(services: List<ServiceEntity>)
+
+        @Query("SELECT * FROM Service")
+        fun getSavedServices() : Flow<List<Service>>
+
+    @Query("DELETE FROM Service")
+    fun deleteSavedServices()
 }

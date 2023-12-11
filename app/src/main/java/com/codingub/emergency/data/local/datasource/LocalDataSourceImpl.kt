@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import com.codingub.emergency.data.local.room.RoomDao
 import com.codingub.emergency.data.local.room.RoomDatabase
 import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -51,5 +52,19 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun isFavoriteArticle(id: String): Boolean {
         return dao.getFavoriteArticle(id) != null
+    }
+
+    override suspend fun insertServices(services: List<Service>) {
+        return database.withTransaction {
+            dao.deleteSavedServices()
+            dao.insertServices(services.map {
+                it.toServiceEntity()
+            })
+        }
+
+    }
+
+    override fun getSavedServices(): Flow<List<Service>> {
+        return dao.getSavedServices()
     }
 }

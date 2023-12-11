@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.Period
@@ -101,6 +102,7 @@ class UserInfoViewModel @Inject constructor(
                 parentPhone = state.parentNumber.ifBlank { null },
                 age = age
             )
+            validationChannel.send(ValidationEvent.Success)
         }
     }
 

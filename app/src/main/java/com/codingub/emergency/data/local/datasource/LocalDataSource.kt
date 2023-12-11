@@ -1,10 +1,14 @@
 package com.codingub.emergency.data.local.datasource
 
 import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
 
+    /*
+        Articles
+     */
     suspend fun insertArticles(articles: List<Article>)
     suspend fun updateFavoriteArticle(article: Article)
 
@@ -13,4 +17,10 @@ interface LocalDataSource {
 
     fun getArticle(id: String) : Flow<Article>
     suspend fun isFavoriteArticle(id: String) : Boolean
+
+    /*
+        Services
+     */
+    suspend fun insertServices(services: List<Service>)
+    fun getSavedServices() : Flow<List<Service>>
 }
