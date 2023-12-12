@@ -36,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -70,6 +69,7 @@ import com.codingub.emergency.common.ArticleType
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ADDITIONAL_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER_ITEMS
@@ -106,19 +106,21 @@ fun ArticleScreen(
         Modifier
             .fillMaxSize()
             .background(getBackgroundBrush())
-            .padding(top = 60.dp)
-            .padding(horizontal = MAIN_PADDING.dp)
             .statusBarsPadding()
+            .padding(top = 40.dp, bottom = 57.dp)
+            .padding(horizontal = MAIN_PADDING.dp)
     ) {
 
         Search(textValue = textValue,
             onTextChange = { text ->
                 textValue = text
+                articleViewModel.searchArticlesByAlt(alt = text)
             }, onIconClicked = {})
         Spacer(modifier = Modifier.height(20.dp))
+        TabbedItem {
+            articleViewModel.searchArticlesByAlt(alt = it)
+        }
 
-
-        TabbedItem()
         when (screenState) {
             ScreenState.Loading -> {}
             is ScreenState.Success -> {
@@ -132,7 +134,6 @@ fun ArticleScreen(
 
             is ScreenState.Error -> {}
         }
-
     }
 }
 
@@ -175,7 +176,7 @@ private fun Search(
     ) {
 
         val stroke = Stroke(
-            width = 2f,
+            width = 3f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
         val contrastColor = colorResource(id = R.color.contrast)
@@ -202,7 +203,14 @@ private fun Search(
             OutlinedTextField(
                 value = textValue,
                 onValueChange = { onTextChange(it) },
-                placeholder = { Text(stringResource(id = R.string.search)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.search),
+                        fontSize = MAIN_ADDITIONAL_TEXT.sp,
+                        fontWeight = FontWeight.Light,
+                        color = colorResource(id = R.color.add_text)
+                    )
+                },
                 maxLines = 1,
                 textStyle = TextStyle(color = colorResource(id = R.color.main_text)),
                 keyboardOptions = KeyboardOptions(
@@ -308,12 +316,14 @@ private fun ArticleItem(
                 Text(
                     text = summary,
                     style = TextStyle(
-                        fontSize = MAIN_CONTENT_TEXT.sp,
+                        fontSize = MAIN_ADDITIONAL_TEXT.sp,
                         fontWeight = FontWeight.Normal,
                         color = colorResource(id = R.color.main_text),
                         textAlign = TextAlign.Start
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 3
                 )
             }
 
@@ -335,23 +345,28 @@ private fun ArticleItem(
 
 @Composable
 private fun TabbedItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTabSelected: (String) -> Unit
 ) {
     val tabTitles = ArticleType.values()
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTabIndex by remember { mutableStateOf<Int?>(null) }
 
     Column(modifier = modifier) {
         TabRow(
-            selectedTabIndex = selectedTabIndex,
-            backgroundColor = Color.White,
+            selectedTabIndex = selectedTabIndex ?: 0,
+            backgroundColor = Color.Transparent,
             contentColor = colorResource(id = R.color.navbar_unselected),
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
-                        .shadow(4.dp),
-                    color = colorResource(id = R.color.contrast_icons)
-                )
+                selectedTabIndex?.let { tabIndex ->
+                    TabRowDefaults.Indicator(
+                        modifier = Modifier
+                            .tabIndicatorOffset(tabPositions[tabIndex])
+                            .clip(RoundedCornerShape(MAIN_CORNER.dp))
+                            .shadow(10.dp),
+                        color = colorResource(id = R.color.background_add),
+                        height = 3.dp
+                    )
+                }
             }
         ) {
             tabTitles.forEachIndexed { index, element ->
@@ -360,17 +375,19 @@ private fun TabbedItem(
                         Text(
                             text = stringResource(id = element.title),
                             maxLines = 1,
+                            color = if(index == selectedTabIndex) colorResource(id = R.color.background_add)
+                                else colorResource(id = R.color.main_text),
+                            fontWeight = FontWeight.Medium,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = 13.sp
+                            fontSize = 14.sp
                         )
                     },
                     selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    modifier = Modifier
-                    //  .padding(10.dp)
-                    // .shadow(elevation = 3.dp)
-                    // .clip(RoundedCornerShape(MAIN_CORNER.dp))
-
+                    onClick = {
+                        selectedTabIndex = index
+                        onTabSelected(element.name)
+                    },
+                    selectedContentColor = colorResource(id = R.color.background_add),
                 )
             }
         }

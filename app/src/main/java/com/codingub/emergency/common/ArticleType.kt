@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.codingub.emergency.R
 
 enum class ArticleType(@StringRes val title: Int) {
-    ACCIDENTS(R.string.accidents),
-    ILLNESSES(R.string.illness),
-    WEATHER(R.string.weather)
+    Accidents(R.string.accidents),
+    Illnesses(R.string.illness),
+    Weather(R.string.weather)
 }

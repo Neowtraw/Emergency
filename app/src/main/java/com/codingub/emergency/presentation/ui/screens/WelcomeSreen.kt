@@ -1,5 +1,6 @@
 package com.codingub.emergency.presentation.ui.screens
 
+import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -19,6 +20,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +28,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +54,8 @@ fun WelcomeScreen(
     navController: NavHostController,
     welcomeViewModel: WelcomeViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
     val pages = listOf(
         OnBoardingPage.FirstPage,
         OnBoardingPage.SecondPage,
@@ -219,14 +224,5 @@ fun PageIndicator(
                 animationDurationInMillis = animationDurationInMillis,
             )
         }
-    }
-}
-
-
-@Composable
-@Preview(showBackground = true)
-fun FirstOnBoardingScreenPreview() {
-    Column(modifier = Modifier.fillMaxSize()) {
-        PagerScreen(onBoardingPage = OnBoardingPage.FirstPage)
     }
 }

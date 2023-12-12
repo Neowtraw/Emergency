@@ -8,7 +8,6 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -18,17 +17,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -50,10 +44,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.navigation.NavRoute.INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
@@ -100,8 +94,8 @@ class MainActivity : ComponentActivity() {
                 val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-                when(navBackStackEntry?.destination?.route) {
-                    WELCOME, USER_AUTH, USER_INFO -> bottomBarState.value = false
+                when (navBackStackEntry?.destination?.route) {
+                    WELCOME, USER_AUTH, USER_INFO, ARTICLE_INFO -> bottomBarState.value = false
                     ARTICLES, HOME, INFO -> bottomBarState.value = true
                 }
 
@@ -112,16 +106,14 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         bottomBar = {
                             AnimatedVisibility(visible = bottomBarState.value,
-                                enter = slideInVertically(initialOffsetY = {it}),
-                                exit = slideOutVertically(targetOffsetY = {it}),
+                                enter = slideInVertically(initialOffsetY = { it }),
+                                exit = slideOutVertically(targetOffsetY = { it }),
                                 content = {
 
                                     AnimatedNavigationBar(
                                         modifier = Modifier
                                             .height(64.dp)
-                                            .background(
-                                                colorResource(id = R.color.background_second)
-                                            ),
+                                            .background(Color.Transparent),
                                         selectedIndex = selectedItemIndex,
                                         cornerRadius = shapeCornerRadius(cornerRadius = 34.dp),
                                         ballAnimation = Parabolic(tween(300)),
@@ -143,8 +135,12 @@ class MainActivity : ComponentActivity() {
                                                     modifier = Modifier.size(26.dp),
                                                     imageVector = ImageVector.vectorResource(item.icon),
                                                     contentDescription = "Bottom Bar Icon",
-                                                    tint = if (selectedItemIndex == item.ordinal) MaterialTheme.colorScheme.secondary
-                                                    else MaterialTheme.colorScheme.inversePrimary
+                                                    tint = if (selectedItemIndex == item.ordinal) colorResource(
+                                                        id = R.color.navbar_selected
+                                                    )
+                                                    else colorResource(
+                                                        id = R.color.navbar_unselected
+                                                    )
                                                 )
                                             }
                                         }
@@ -158,7 +154,7 @@ class MainActivity : ComponentActivity() {
                             setupNavGraph(
                                 navController = navController,
                                 startDestination = screen,
-                                padding = padding,
+                                padding = PaddingValues(0.dp),
                                 activity = this
                             )
                         }

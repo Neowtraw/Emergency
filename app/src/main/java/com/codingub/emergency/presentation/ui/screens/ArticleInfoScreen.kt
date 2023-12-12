@@ -1,8 +1,5 @@
 package com.codingub.emergency.presentation.ui.screens
 
-import android.widget.ScrollView
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +62,7 @@ fun ArticleInfoScreen(
         )
     )
 
-    val videoItem by articleInfoViewModel.videoItem.collectAsState()
+    // val videoItem by articleInfoViewModel.videoItem.collectAsState()
     article.videoUrl?.let(articleInfoViewModel::setVideoUri)
 
     var lifecycle by remember {
@@ -87,6 +83,7 @@ fun ArticleInfoScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(getBackgroundBrush())
     ) {
         Box(
@@ -115,24 +112,27 @@ fun ArticleInfoScreen(
 
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .statusBarsPadding()
-                .padding(top = 200.dp)
+                .padding(top = 200.dp, bottom = 50.dp)
                 .padding(horizontal = MAIN_PADDING.dp)
         ) {
-            Text(text = article.title, fontSize = MAIN_HEADER_TEXT.sp,
+            Text(
+                text = article.title, fontSize = MAIN_HEADER_TEXT.sp,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Start,
                 color = colorResource(id = R.color.main_text)
             )
             Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-            Text(text = article.summary, fontSize = MAIN_ADDITIONAL_TEXT.sp,
-                fontWeight = FontWeight.Medium,
+            Text(
+                text = article.summary, fontSize = MAIN_ADDITIONAL_TEXT.sp,
+                fontWeight = FontWeight.Light,
                 textAlign = TextAlign.Start,
                 color = colorResource(id = R.color.add_text)
             )
             Spacer(modifier = Modifier.height(60.dp))
-            Text(text = article.description, fontSize = MAIN_CONTENT_TEXT.sp,
+            Text(
+                text = article.description.replace("\\n", "\n").replace("\\t", "\t"),
+                fontSize = MAIN_CONTENT_TEXT.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Start,
                 color = colorResource(id = R.color.main_text)
@@ -145,16 +145,18 @@ fun ArticleInfoScreen(
                     }
                 },
                 update = {
-                     when(lifecycle) {
+                    when (lifecycle) {
                         Lifecycle.Event.ON_PAUSE -> {
                             it.onPause()
                             it.player?.pause()
                         }
-                         Lifecycle.Event.ON_RESUME -> {
-                             it.onResume()
-                         }
-                         else -> Unit
-                     }
+
+                        Lifecycle.Event.ON_RESUME -> {
+                            it.onResume()
+                        }
+
+                        else -> Unit
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
