@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.codingub.emergency.data.local.models.ArticleEntity
-import com.codingub.emergency.data.local.models.FavoriteArticleEntity
 import com.codingub.emergency.data.local.models.ServiceEntity
 import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow
@@ -20,29 +19,23 @@ interface RoomDao  {
     @Query("SELECT * FROM Article")
     fun getArticles() : Flow<List<ArticleEntity>>
 
+    @Query("SELECT * FROM Article WHERE liked = 1")
+    fun getFavoriteArticles() : Flow<List<ArticleEntity>>
+
     @Query("SELECT * FROM Article WHERE id = :articleId")
     fun getArticle(articleId: String) : Flow<ArticleEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticles(articles: List<ArticleEntity>)
 
-    @Query("DELETE FROM Article")
+    @Query("DELETE FROM Article WHERE liked = 0")
     suspend fun deleteAllArticles()
 
-    /*
-        FavoriteArticle
-     */
-    @Query("SELECT * FROM FavoriteArticle")
-    fun getFavoriteArticles() : Flow<List<FavoriteArticleEntity>>
+    @Query("UPDATE Article SET liked = 1 WHERE id = :id")
+    suspend fun addArticleToFavoriteById(id: String)
 
-    @Query("SELECT * FROM FavoriteArticle WHERE id = :id")
-    suspend fun getFavoriteArticle(id: String) : FavoriteArticleEntity?
-
-    @Insert
-    suspend fun insertFavoriteArticle(article: FavoriteArticleEntity)
-
-    @Query("DELETE FROM FavoriteArticle WHERE id = :articleId")
-    suspend fun deleteFavoriteArticle(articleId: String)
+    @Query("UPDATE Article SET liked = 0 WHERE id = :id")
+    suspend fun removeArticleFromFavoriteById(id: String)
 
     /*
         Service

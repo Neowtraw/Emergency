@@ -14,7 +14,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
@@ -23,8 +22,8 @@ class AppRepositoryImpl @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : AppRepository {
 
-    override suspend fun updateFavoriteArticle(article: Article) =
-        localDataSource.updateFavoriteArticle(article)
+    override suspend fun updateFavoriteArticle(id: String, liked: Boolean) =
+        localDataSource.updateFavoriteArticle(id, liked)
 
     override fun getArticles(): Flow<ResultState<List<Article>>> = NetworkBoundResultState(
         query = {
@@ -66,8 +65,6 @@ class AppRepositoryImpl @Inject constructor(
         awaitClose { cancel() }
     }
 
-    override suspend fun isFavoriteArticle(id: String): Boolean =
-        localDataSource.isFavoriteArticle(id)
 
     override fun getServicesFromLanguage(language: String): Flow<ResultState<List<Service>>> =
         NetworkBoundResultState(

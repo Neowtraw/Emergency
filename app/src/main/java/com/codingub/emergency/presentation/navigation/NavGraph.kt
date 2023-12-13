@@ -1,6 +1,8 @@
 package com.codingub.emergency.presentation.navigation
 
 import android.app.Activity
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import com.codingub.emergency.presentation.ui.screens.WelcomeScreen
 import com.codingub.emergency.presentation.ui.screens.info.UserInfoScreen
 import com.codingub.emergency.presentation.ui.viewmodels.SharedViewModel
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun setupNavGraph(
     navController: NavHostController,
@@ -42,9 +45,7 @@ fun setupNavGraph(
             )
         }
         composable(route = NavRoute.INFO) {
-            InfoScreen(
-                navController = navController
-            )
+            InfoScreen()
         }
         composable(route = NavRoute.WELCOME) {
             WelcomeScreen(

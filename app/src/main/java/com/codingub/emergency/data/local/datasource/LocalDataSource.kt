@@ -10,13 +10,12 @@ interface LocalDataSource {
         Articles
      */
     suspend fun insertArticles(articles: List<Article>)
-    suspend fun updateFavoriteArticle(article: Article)
+    suspend fun updateFavoriteArticle(id: String, liked: Boolean)
 
     fun getFavoriteArticles() : Flow<List<Article>>
     fun getAllArticles() : Flow<List<Article>>
 
     fun getArticle(id: String) : Flow<Article>
-    suspend fun isFavoriteArticle(id: String) : Boolean
 
     /*
         Services

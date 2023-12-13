@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- *  Uses for sharing article to AticleInfo
+ *  Uses for sharing article to Aticle
  */
 
 class SharedViewModel(

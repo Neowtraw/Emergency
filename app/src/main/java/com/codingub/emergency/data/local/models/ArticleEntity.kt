@@ -12,7 +12,8 @@ data class ArticleEntity(
     val description: String,
     val imageUrl: String,
     val videoUrl: String?,
-    val phone: String?
+    val phone: String?,
+    val liked: Boolean
 ) {
 
     fun toArticle() : Article {
@@ -23,7 +24,8 @@ data class ArticleEntity(
             description = description,
             imageUrl = imageUrl,
             videoUrl = videoUrl,
-            phone = phone
+            phone = phone,
+            liked = liked
         )
     }
 }

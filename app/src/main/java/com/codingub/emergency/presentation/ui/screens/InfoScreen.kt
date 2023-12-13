@@ -84,7 +84,6 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun InfoScreen(
-    navController: NavController,
     infoViewModel: InfoViewModel = hiltViewModel()
 ) {
 

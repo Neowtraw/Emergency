@@ -2,7 +2,6 @@ package com.codingub.emergency.domain.models
 
 import androidx.compose.runtime.Immutable
 import com.codingub.emergency.data.local.models.ArticleEntity
-import com.codingub.emergency.data.local.models.FavoriteArticleEntity
 
 @Immutable
 data class Article(
@@ -13,6 +12,7 @@ data class Article(
     val imageUrl: String = "",
     val videoUrl: String? = null,
     val phone: String? = null,
+    val liked: Boolean = false
 ) {
 
     fun toArticleEntity() : ArticleEntity {
@@ -23,19 +23,8 @@ data class Article(
             description = description,
             imageUrl = imageUrl,
             videoUrl = videoUrl,
-            phone = phone
-        )
-    }
-
-    fun toFavoriteArticle() : FavoriteArticleEntity {
-        return FavoriteArticleEntity(
-            id = id,
-            title = title,
-            summary = summary,
-            description = description,
-            imageUrl = imageUrl,
-            videoUrl = videoUrl,
-            phone = phone
+            phone = phone,
+            liked = liked
         )
     }
 }

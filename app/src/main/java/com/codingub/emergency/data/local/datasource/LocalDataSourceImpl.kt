@@ -13,30 +13,27 @@ class LocalDataSourceImpl @Inject constructor(
     private val database: RoomDatabase,
     private val dao: RoomDao
 ) : LocalDataSource {
+
+    override suspend fun updateFavoriteArticle(id: String, liked: Boolean) {
+        if(liked) {
+            dao.removeArticleFromFavoriteById(id)
+            return
+        }
+        dao.addArticleToFavoriteById(id)
+    }
+
+    override fun getFavoriteArticles(): Flow<List<Article>> {
+        return dao.getFavoriteArticles().map { articles ->
+            articles.map { it.toArticle() }
+        }
+    }
+
     override suspend fun insertArticles(articles: List<Article>) {
         return database.withTransaction {
             dao.deleteAllArticles()
             dao.insertArticles(articles.map {
                 it.toArticleEntity()
             })
-        }
-    }
-
-
-    override suspend fun updateFavoriteArticle(article: Article) {
-        val exArticle = dao.getFavoriteArticle(article.id)
-        if (exArticle != null) {
-            dao.deleteFavoriteArticle(article.id)
-            return
-        }
-        dao.insertFavoriteArticle(article.toFavoriteArticle())
-    }
-
-    override fun getFavoriteArticles(): Flow<List<Article>> {
-        return dao.getFavoriteArticles().map {
-            it.map { article ->
-                article.toArticle()
-            }
         }
     }
 
@@ -48,10 +45,6 @@ class LocalDataSourceImpl @Inject constructor(
 
     override fun getArticle(id: String): Flow<Article> {
         return dao.getArticle(id).map { it.toArticle() }
-    }
-
-    override suspend fun isFavoriteArticle(id: String): Boolean {
-        return dao.getFavoriteArticle(id) != null
     }
 
     override suspend fun insertServices(services: List<Service>) {

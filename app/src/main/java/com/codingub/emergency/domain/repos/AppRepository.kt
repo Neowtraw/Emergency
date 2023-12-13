@@ -9,12 +9,11 @@ interface AppRepository {
     /*
         Articles
      */
-    suspend fun updateFavoriteArticle(article: Article)
+    suspend fun updateFavoriteArticle(id: String, liked: Boolean)
     fun getArticles() : Flow<ResultState<List<Article>>>
     fun getArticle(id: String) : Flow<Article>
     fun getFavoriteArticles() : Flow<List<Article>>
     fun searchArticles(alt: String) : Flow<ResultState<List<Article>>>
-    suspend fun isFavoriteArticle(id: String) : Boolean
 
     /*
         Services

@@ -6,6 +6,7 @@ import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.use_cases.GetArticles
 import com.codingub.emergency.domain.use_cases.SearchArticles
+import com.codingub.emergency.domain.use_cases.UpdateFavoriteArticle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ArticleViewModel @Inject constructor(
     private val getArticles: GetArticles,
-    private val searchArticles: SearchArticles
+    private val searchArticles: SearchArticles,
+    private val updateFavoriteArticle: UpdateFavoriteArticle
 ) : ViewModel(){
 
     private val _articles: MutableStateFlow<ResultState<List<Article>>> = MutableStateFlow(ResultState.Loading())
@@ -25,6 +27,12 @@ class ArticleViewModel @Inject constructor(
 
     init {
         getAllArticles()
+    }
+
+    fun updateArticleToFavorite(id: String, liked: Boolean) {
+        viewModelScope.launch {
+            updateFavoriteArticle(id, liked)
+        }
     }
 
     private fun getAllArticles() {

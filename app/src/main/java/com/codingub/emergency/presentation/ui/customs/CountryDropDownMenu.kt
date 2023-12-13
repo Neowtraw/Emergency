@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,15 +62,16 @@ fun CountryDropDownMenu(
                 if(isLabelVisible) {
                     Text(
                         stringResource(id = R.string.country_code),
-                        color = colorResource(id = R.color.main_text)
+                        color = colorResource(id = R.color.contrast)
                     )
                 }
             },
             modifier = modifier.menuAnchor(),
             shape = RoundedCornerShape(Constants.MAIN_CORNER.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = colorResource(id = R.color.main_text),
-                unfocusedBorderColor = colorResource(id = R.color.add_text)
+                focusedBorderColor = colorResource(id = R.color.navbar_selected),
+                unfocusedBorderColor = colorResource(id = R.color.contrast),
+                textColor = colorResource(id = R.color.main_text)
             )
         )
 
