@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.codingub.emergency.common.Country
 import com.codingub.emergency.domain.models.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -24,14 +25,40 @@ class DataStoreRepository(context: Context) {
         val onBoardingKey = booleanPreferencesKey(name = "on_boarding_completed")
         val onUserKey = stringPreferencesKey(name = "on_user")
         val onVerificationCodeKey = stringPreferencesKey(name = "on_verification_code")
+        val onCountryKey = stringPreferencesKey(name = "on_country_key")
     }
 
     private val dataStore = context.dataStore
 
     /*
+        Language
+     */
+    suspend fun saveLanguage(country: Country) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.onCountryKey] = Gson().toJson(country)
+        }
+    }
+
+    fun readLanguage(): Flow<Country> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                Gson().fromJson(
+                    preferences[PreferencesKey.onCountryKey],
+                    object : TypeToken<Country>() {}.type
+                ) ?: Country.Russia
+            }
+    }
+
+    /*
         Verification code
      */
-
     suspend fun saveVerificationCode(verificationKey: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.onVerificationCodeKey] = verificationKey
@@ -56,22 +83,23 @@ class DataStoreRepository(context: Context) {
     /*
        User
     */
-
     suspend fun saveUserInfo(user: User) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.onUserKey] = Gson().toJson(user)
         }
     }
 
-    fun readUserInfo(): Flow<User?> {
+    fun readUserInfo(): Flow<User> {
         return dataStore.data
             .catch { exception ->
                 if (exception is IOException) emit(emptyPreferences())
                 else throw exception
             }
             .map { preferences ->
-                val user = preferences[PreferencesKey.onUserKey]
-                Gson().fromJson(user, object : TypeToken<User>() {}.type)
+                Gson().fromJson(
+                    preferences[PreferencesKey.onUserKey],
+                    object : TypeToken<User>() {}.type
+                ) ?: User()
             }
     }
 

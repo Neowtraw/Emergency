@@ -10,8 +10,8 @@
 
     <color name="navbar_color">#FFFFFF</color>
     <color name="navball_color">#3F51B5</color>
-    <color name="navbar_unselected">#929298</color>
-    <color name="navbar_selected">#3F51B5</color>
+    <color name="navbar_unselected">#3F51B5</color>
+    <color name="navbar_selected">#0AAAB4</color>
 
     <color name="article_view_content">#3F51B5</color>
     <color name="article_view_stroke">#3F51B5</color>
@@ -22,8 +22,8 @@
 
     <color name="text_input">#50020202</color>
 
-    <color name="article_favorite_view_selected">#E68B29</color>
-    <color name="article_favorite_view_unselected">#FAA81E</color>
+    <color name="article_favorite_view_selected">#D5951A</color>
+    <color name="article_favorite_view_unselected">#D5951A</color>
 
     <color name="contrast">#3F51B5</color>
     <color name="contrast_icons">#3F51B5</color>
@@ -33,6 +33,9 @@
     <color name="background_between">#F8FBFF</color>
     <color name="background">#FFFFFF</color>
     <color name="background_add">#3F51B5</color>
+
+    <color name="tabrow_selected">#1A3F51B5</color>
+    <color name="tabrow_unselected">#FFFFFF</color>
 
     <color name="text_field_outline">#3F51B5</color>
 

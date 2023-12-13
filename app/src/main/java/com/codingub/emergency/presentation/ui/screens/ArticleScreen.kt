@@ -1,27 +1,45 @@
 package com.codingub.emergency.presentation.ui.screens
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Tab
+import androidx.compose.material.TabPosition
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
@@ -107,7 +125,7 @@ fun ArticleScreen(
             .fillMaxSize()
             .background(getBackgroundBrush())
             .statusBarsPadding()
-            .padding(top = 40.dp, bottom = 57.dp)
+            .padding(top = 40.dp)
             .padding(horizontal = MAIN_PADDING.dp)
     ) {
 
@@ -144,8 +162,11 @@ private fun ArticleGrid(
     onLikeClick: () -> Unit,
     onCardClick: (Article) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1)
+    LazyColumn(
+        contentPadding = PaddingValues(
+            top = MAIN_PADDING.dp,
+            bottom = 80.dp
+        )
     ) {
         items(articles) { article ->
             ArticleItem(
@@ -160,6 +181,103 @@ private fun ArticleGrid(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ArticleItem(
+    image: String,
+    title: String,
+    summary: String,
+    //liked: Boolean,
+    onLikeClick: () -> Unit,
+    onCardClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 5.dp)
+            .height(280.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = MAIN_ELEVATION.dp
+        ),
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(
+            contentColor = colorResource(id = R.color.article_view_content),
+            containerColor = colorResource(id = R.color.background)
+        ),
+        onClick = onCardClick
+    ) {
+
+        AsyncImage(
+            model = image,
+            contentDescription = "Article View",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .aspectRatio(1280f / 847f)
+                .clip(
+                    shape = RoundedCornerShape(
+                        MAIN_CORNER.dp,
+                        MAIN_CORNER.dp,
+                        0.dp,
+                        0.dp
+                    )
+                ),
+            contentScale = ContentScale.FillWidth,
+            error = painterResource(R.drawable.placeholder)
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.background(Color.White)
+
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(MAIN_PADDING.dp, MAIN_PADDING.dp, 0.dp, MAIN_PADDING.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = TextStyle(
+                        fontSize = MAIN_CONTENT_TEXT.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colorResource(id = R.color.main_text),
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER_ITEMS.dp))
+
+                Text(
+                    text = summary,
+                    style = TextStyle(
+                        fontSize = MAIN_ADDITIONAL_TEXT.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = colorResource(id = R.color.main_text),
+                        textAlign = TextAlign.Start
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 3
+                )
+            }
+
+            // Иконка (звездочка)
+            Icon(
+                imageVector = if (true) ImageVector.vectorResource(id = R.drawable.ic_favorite)
+                else ImageVector.vectorResource(id = R.drawable.ic_favorite),
+                contentDescription = null,
+                tint = if (true) colorResource(id = R.color.article_favorite_view_selected)
+                else colorResource(id = R.color.article_favorite_view_unselected),
+                modifier = Modifier
+                    .clickable { onLikeClick() }
+                    .size(25.dp)
+                    .padding(horizontal = MAIN_PADDING.dp)
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,7 +349,6 @@ private fun Search(
                 contentDescription = null,
                 tint = colorResource(id = R.color.contrast_icons),
                 modifier = Modifier
-                    .clickable { }
                     .padding(MAIN_PADDING.dp)
                     .size(20.dp)
                     .clickable {
@@ -241,105 +358,6 @@ private fun Search(
         }
 
 
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ArticleItem(
-    image: String,
-    title: String,
-    summary: String,
-    //liked: Boolean,
-    onLikeClick: () -> Unit,
-    onCardClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(280.dp)
-            .padding(5.dp, 10.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = MAIN_ELEVATION.dp
-        ),
-        shape = RoundedCornerShape(MAIN_CORNER.dp),
-        colors = CardDefaults.cardColors(
-            contentColor = colorResource(id = R.color.article_view_content),
-            containerColor = colorResource(id = R.color.background)
-        ),
-        border = BorderStroke(1.dp, colorResource(id = R.color.article_view_stroke)),
-        onClick = onCardClick
-    ) {
-
-        AsyncImage(
-            model = image,
-            contentDescription = "Article View",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-                .aspectRatio(1280f / 847f)
-                .clip(
-                    shape = RoundedCornerShape(
-                        MAIN_CORNER.dp,
-                        MAIN_CORNER.dp,
-                        0.dp,
-                        0.dp
-                    )
-                ),
-            contentScale = ContentScale.FillWidth,
-            error = painterResource(R.drawable.placeholder)
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.background(Color.White)
-
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(MAIN_PADDING.dp, MAIN_PADDING.dp, 0.dp, MAIN_PADDING.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = TextStyle(
-                        fontSize = MAIN_CONTENT_TEXT.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.main_text),
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(MAIN_DIVIDER_ITEMS.dp))
-
-                Text(
-                    text = summary,
-                    style = TextStyle(
-                        fontSize = MAIN_ADDITIONAL_TEXT.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = colorResource(id = R.color.main_text),
-                        textAlign = TextAlign.Start
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3
-                )
-            }
-
-            // Иконка (звездочка)
-            Icon(
-                imageVector = if (true) ImageVector.vectorResource(id = R.drawable.ic_favorite)
-                else ImageVector.vectorResource(id = R.drawable.ic_favorite),
-                contentDescription = null,
-                tint = if (true) colorResource(id = R.color.article_favorite_view_selected)
-                else colorResource(id = R.color.article_favorite_view_unselected),
-                modifier = Modifier
-                    .clickable { onLikeClick() }
-                    .padding(MAIN_PADDING.dp)
-                    .size(20.dp)
-            )
-        }
     }
 }
 
@@ -356,21 +374,22 @@ private fun TabbedItem(
             selectedTabIndex = selectedTabIndex ?: 0,
             backgroundColor = Color.Transparent,
             contentColor = colorResource(id = R.color.navbar_unselected),
-            indicator = { tabPositions ->
-                selectedTabIndex?.let { tabIndex ->
-                    TabRowDefaults.Indicator(
-                        modifier = Modifier
-                            .tabIndicatorOffset(tabPositions[tabIndex])
-                            .clip(RoundedCornerShape(MAIN_CORNER.dp))
-                            .shadow(10.dp),
-                        color = colorResource(id = R.color.background_add),
-                        height = 3.dp
-                    )
-                }
-            }
+            indicator = {}
         ) {
             tabTitles.forEachIndexed { index, element ->
+                val bgColor: Color by animateColorAsState(
+                    if (selectedTabIndex == index) colorResource(id = R.color.tabrow_selected) else colorResource(
+                        id = R.color.tabrow_unselected
+                    ),
+                    label = "",
+                    animationSpec = tween(300, easing = LinearEasing)
+                )
+
                 Tab(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(bgColor),
                     text = {
                         Text(
                             text = stringResource(id = element.title),
@@ -388,9 +407,37 @@ private fun TabbedItem(
                         onTabSelected(element.name)
                     },
                     selectedContentColor = colorResource(id = R.color.background_add),
+                    unselectedContentColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.disabled)
                 )
             }
         }
     }
 }
 
+@Composable
+fun TabIndicator(tabPosition: List<TabPosition>, index: Int){
+    val transition = updateTransition(targetState = index, label = "")
+    val leftIndicator by transition.animateDp(label = "", transitionSpec = {
+        spring(stiffness = Spring.StiffnessVeryLow)
+    }) {
+        tabPosition[it].left
+    }
+
+    val rightIndicator by transition.animateDp(label = "", transitionSpec = {
+        spring(stiffness = Spring.StiffnessVeryLow)
+    }) {
+        tabPosition[it].right
+    }
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .wrapContentSize(align = Alignment.BottomStart)
+            .offset(x = leftIndicator)
+            .width(rightIndicator - leftIndicator)
+            .padding(4.dp)
+            .fillMaxSize()
+            .background(colorResource(id = R.color.teal_700))
+
+    )
+}
