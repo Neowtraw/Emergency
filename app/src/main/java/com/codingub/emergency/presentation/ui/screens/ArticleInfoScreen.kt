@@ -1,8 +1,10 @@
 package com.codingub.emergency.presentation.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,14 +17,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
@@ -40,9 +41,11 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
-import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.presentation.ui.customs.FavoriteIcon
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
+import com.codingub.emergency.presentation.ui.customs.getImageBrush
 import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ADDITIONAL_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
@@ -52,18 +55,17 @@ import com.codingub.emergency.presentation.ui.viewmodels.ArticleInfoViewModel
 
 @Composable
 fun ArticleInfoScreen(
-    article: Article,
+    id: String,
     navController: NavController,
     articleInfoViewModel: ArticleInfoViewModel = hiltViewModel()
 ) {
-    val gradientBrush = Brush.verticalGradient(
-        colors = listOf(
-            Color.Transparent, colorResource(id = R.color.background_between)
-        )
-    )
 
     // val videoItem by articleInfoViewModel.videoItem.collectAsState()
-    article.videoUrl?.let(articleInfoViewModel::setVideoUri)
+    // article.videoUrl?.let(articleInfoViewModel::setVideoUri)
+
+
+    articleInfoViewModel.getSavedArticle(id)
+    val article by articleInfoViewModel.article.collectAsState()
 
     var lifecycle by remember {
         mutableStateOf(Lifecycle.Event.ON_CREATE)
@@ -91,7 +93,7 @@ fun ArticleInfoScreen(
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
                 .height(300.dp)
-                .background(brush = gradientBrush)
+                .background(brush = getImageBrush())
         ) {
             AsyncImage(
                 model = article.imageUrl,
@@ -104,7 +106,7 @@ fun ArticleInfoScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(brush = gradientBrush)
+                    .background(brush = getImageBrush())
             )
 
         }
@@ -116,16 +118,27 @@ fun ArticleInfoScreen(
                 .padding(top = 200.dp, bottom = 50.dp)
                 .padding(horizontal = MAIN_PADDING.dp)
         ) {
-            Text(
-                text = article.title, fontSize = MAIN_HEADER_TEXT.sp,
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Start,
-                color = colorResource(id = R.color.main_text)
-            )
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center) {
+                Text(
+                    text = article.title, fontSize = MAIN_HEADER_TEXT.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Start,
+                    fontFamily = monFamily,
+                    color = colorResource(id = R.color.main_text),
+                    modifier = Modifier.weight(1f)
+                )
+
+                FavoriteIcon(liked = article.liked) {
+                    articleInfoViewModel.updateArticleToFavorite(article.id, article.liked)
+                }
+            }
+
             Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
             Text(
                 text = article.summary, fontSize = MAIN_ADDITIONAL_TEXT.sp,
                 fontWeight = FontWeight.Light,
+                fontFamily = monFamily,
                 textAlign = TextAlign.Start,
                 color = colorResource(id = R.color.add_text)
             )
@@ -133,6 +146,7 @@ fun ArticleInfoScreen(
             Text(
                 text = article.description.replace("\\n", "\n").replace("\\t", "\t"),
                 fontSize = MAIN_CONTENT_TEXT.sp,
+                fontFamily = monFamily,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Start,
                 color = colorResource(id = R.color.main_text)

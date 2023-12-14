@@ -16,6 +16,7 @@ object NavRoute {
     const val ARTICLE_INFO = "ArticleInfo"
 
     const val ARTICLE_BOARDING = "ArticleBoarding"
+    const val HOME_BOARDING = "HomeBoarding"
 
     /*
         User Information

@@ -56,11 +56,14 @@ import com.codingub.emergency.R
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Service
 import com.codingub.emergency.presentation.ui.customs.CountryDropDownMenu
+import com.codingub.emergency.presentation.ui.customs.InfoContentText
+import com.codingub.emergency.presentation.ui.customs.InfoHeaderText
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.screens.location.GeoUtil
 import com.codingub.emergency.presentation.ui.screens.location.PermissionRationaleDialog
 import com.codingub.emergency.presentation.ui.screens.location.PermissionRequestButton
 import com.codingub.emergency.presentation.ui.screens.location.RationaleState
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants.INFO_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
@@ -110,12 +113,11 @@ fun InfoScreen(
             lifecycleOwner.lifecycle,
             Lifecycle.State.STARTED
         ).collectLatest { result ->
-            Log.d("country", result.toString())
 
-            when (result) {
-                is ResultState.Success -> screenState = ScreenState.Success(data = result.data!!)
-                is ResultState.Error -> screenState = ScreenState.Error(error = result.error!!)
-                is ResultState.Loading -> screenState = ScreenState.Loading
+            screenState = when (result) {
+                is ResultState.Success -> ScreenState.Success(data = result.data!!)
+                is ResultState.Error -> ScreenState.Error(error = result.error!!)
+                is ResultState.Loading -> ScreenState.Loading
             }
         }
     }
@@ -131,23 +133,22 @@ fun InfoScreen(
     ) {
         rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
 
-        CountryDropDownMenu(
-            code = country,
-            modifier = Modifier.fillMaxWidth(),
-            isLabelVisible = false,
-            value = country.name
-        ) {
-            Log.d("country", it.language)
-            infoViewModel.setCountry(it)
-        }
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-
         Text(
             text = stringResource(id = R.string.emergency_service),
             fontSize = MAIN_HEADER_TEXT.sp,
             fontWeight = FontWeight.ExtraBold,
             color = colorResource(id = R.color.contrast)
         )
+        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+        CountryDropDownMenu(
+            code = country,
+            modifier = Modifier.fillMaxWidth(),
+            isLabelVisible = false,
+            value = country.name
+        ) {
+            infoViewModel.setCountry(it)
+        }
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
         when (screenState) {
@@ -160,8 +161,9 @@ fun InfoScreen(
         }
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         Text(
-            text = stringResource(id = R.string.user_statistic),
+            text = stringResource(id = R.string.title_your_data),
             fontSize = MAIN_HEADER_TEXT.sp,
+            fontFamily = monFamily,
             fontWeight = FontWeight.ExtraBold,
             color = colorResource(id = R.color.contrast)
             )
@@ -190,32 +192,17 @@ fun InfoScreen(
             }
         )
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        InfoHeaderText(text = "Ваш домашний адрес")
+        InfoHeaderText(text = stringResource(id = R.string.title_home_address))
         InfoContentText(text = infoViewModel.getUser().address)
 
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         if (infoViewModel.getUser().parentNumber != null) {
-            InfoHeaderText(text = "Номер родителя")
+            InfoHeaderText(text = stringResource(id = R.string.title_parent_phone))
             InfoContentText(text = infoViewModel.getUser().parentNumber!!)
         }
     }
 }
 
-@Composable
-fun InfoHeaderText(text: String) {
-    Text(text = text,
-        color = colorResource(id = R.color.main_text),
-        fontSize = INFO_HEADER_TEXT.sp,
-        fontWeight = FontWeight.Medium)
-}
-
-@Composable
-fun InfoContentText(text: String) {
-    Text(text = text,
-        color = colorResource(id = R.color.main_text),
-        fontSize = MAIN_CONTENT_TEXT.sp,
-        fontWeight = FontWeight.Normal)
-}
 
 @Composable
 @SuppressWarnings("MissingPermission")
@@ -260,7 +247,7 @@ fun LocationUpdatesContent(usePreciseLocation: Boolean) {
     }
 
     Column {
-        InfoHeaderText(text = "Сейчас вы находитесь")
+        InfoHeaderText(text = stringResource(id = R.string.title_current_address))
         InfoContentText(text = locationUpdates)
     }
 
@@ -349,10 +336,12 @@ private fun PhoneItem(
                 modifier = Modifier.weight(1f),
                 color = colorResource(id = R.color.main_text),
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = monFamily,
                 fontSize = MAIN_CONTENT_TEXT.sp
             )
             Text(
                 text = phone,
+                fontFamily = monFamily,
                 color = colorResource(id = R.color.main_text),
                 fontSize = MAIN_CONTENT_TEXT.sp
             )
@@ -361,7 +350,6 @@ private fun PhoneItem(
         Box(
             modifier = Modifier
                 .size(40.dp)
-                //  .shadow(MAIN_ELEVATION.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(colorResource(id = R.color.call))
                 .clickable { onIconClicked() },

@@ -22,7 +22,7 @@
 
     <color name="text_input">#50020202</color>
 
-    <color name="article_favorite_view_selected">#D5951A</color>
+    <color name="article_favorite_view_selected">#D55B1A</color>
     <color name="article_favorite_view_unselected">#D5951A</color>
 
     <color name="contrast">#3F51B5</color>
@@ -33,6 +33,8 @@
     <color name="background_between">#F8FBFF</color>
     <color name="background">#FFFFFF</color>
     <color name="background_add">#3F51B5</color>
+    <color name="divider">#E7E9EB</color>
+    <color name="divider_second">#E7E9EB</color>
 
     <color name="tabrow_selected">#1A3F51B5</color>
     <color name="tabrow_unselected">#FFFFFF</color>

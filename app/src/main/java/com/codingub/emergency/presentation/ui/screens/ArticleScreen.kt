@@ -72,6 +72,7 @@ import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.presentation.ui.customs.ArticleItem
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ADDITIONAL_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
@@ -82,7 +83,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ArticleScreen(
-    onArticleClicked: (Article) -> Unit,
+    onArticleClicked: (String) -> Unit,
     articleViewModel: ArticleViewModel = hiltViewModel()
 ) {
 
@@ -130,7 +131,7 @@ fun ArticleScreen(
                         articleViewModel.updateArticleToFavorite(id, liked)
                     },
                     onCardClick = {
-                        onArticleClicked(it)
+                        onArticleClicked(it.id)
                     })
             }
 
@@ -281,6 +282,7 @@ private fun TabbedItem(
                         Text(
                             text = stringResource(id = element.title),
                             maxLines = 1,
+                            fontFamily = monFamily,
                             color = if (index == selectedTabIndex) colorResource(id = R.color.background_add)
                             else colorResource(id = R.color.main_text),
                             fontWeight = FontWeight.Medium,

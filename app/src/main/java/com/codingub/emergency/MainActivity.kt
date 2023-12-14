@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
+import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
 import com.codingub.emergency.presentation.navigation.NavRoute.USER_INFO

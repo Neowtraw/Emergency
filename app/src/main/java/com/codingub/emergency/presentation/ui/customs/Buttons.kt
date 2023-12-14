@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.codingub.emergency.presentation.ui.theme.monFamily
 
 @Composable
 fun FinishButton(
@@ -39,7 +40,7 @@ fun FinishButton(
                     contentColor = Color.White
                 )
             ) {
-                Text(text = stringResource(id = text))
+                Text(text = stringResource(id = text), fontFamily = monFamily)
             }
         }
     }

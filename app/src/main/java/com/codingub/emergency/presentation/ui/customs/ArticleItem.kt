@@ -1,11 +1,16 @@
 package com.codingub.emergency.presentation.ui.customs
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,10 +22,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -34,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,8 +55,8 @@ fun ArticleItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 5.dp, bottom = 5.dp)
-            .height(280.dp),
+            .height(280.dp)
+            .padding(vertical = 5.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = Constants.MAIN_ELEVATION.dp
         ),
@@ -68,7 +74,7 @@ fun ArticleItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(150.dp)
-                .aspectRatio(1280f / 847f)
+                .aspectRatio(667f / 375f)
                 .clip(
                     shape = RoundedCornerShape(
                         Constants.MAIN_CORNER.dp,
@@ -84,7 +90,7 @@ fun ArticleItem(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(Color.White)
+                .background(colorResource(id = R.color.background))
                 .padding(end = Constants.MAIN_PADDING.dp)
 
 
@@ -92,14 +98,20 @@ fun ArticleItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(Constants.MAIN_PADDING.dp, Constants.MAIN_PADDING.dp, 0.dp, Constants.MAIN_PADDING.dp)
+                    .padding(
+                        Constants.MAIN_PADDING.dp,
+                        Constants.MAIN_PADDING.dp,
+                        0.dp,
+                        Constants.MAIN_PADDING.dp
+                    )
             ) {
                 Text(
                     text = title,
                     style = TextStyle(
                         fontSize = Constants.MAIN_CONTENT_TEXT.sp,
                         fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.main_text),
+                        fontFamily = monFamily,
+                        color = colorResource(id = R.color.contrast),
                         textAlign = TextAlign.Center
                     ),
                     modifier = Modifier.fillMaxWidth()
@@ -112,6 +124,7 @@ fun ArticleItem(
                     style = TextStyle(
                         fontSize = Constants.MAIN_ADDITIONAL_TEXT.sp,
                         fontWeight = FontWeight.Normal,
+                        fontFamily = monFamily,
                         color = colorResource(id = R.color.main_text),
                         textAlign = TextAlign.Start
                     ),
@@ -120,19 +133,108 @@ fun ArticleItem(
                     maxLines = 3
                 )
             }
-
-            // Иконка (звездочка)
-            Icon(
-                imageVector = if (liked) ImageVector.vectorResource(id = R.drawable.ic_favorite)
-                else ImageVector.vectorResource(id = R.drawable.ic_favorite),
-                contentDescription = null,
-                tint = if (liked) colorResource(id = R.color.article_favorite_view_selected)
-                else Color.Red,
-                modifier = Modifier
-                    .clickable { onLikeClick() }
-                    .size(25.dp)
-
-            )
+            FavoriteIcon(liked = liked, onLikeClick)
         }
     }
+}
+
+@Composable
+fun FavoriteIcon(liked: Boolean,
+                 onLikeClick: () -> Unit) {
+    val animatedColor by animateColorAsState(
+        targetValue = if (liked) colorResource(id = R.color.article_favorite_view_selected)
+        else colorResource(id = R.color.article_favorite_view_unselected),
+        label = "favorite",
+        animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+    )
+
+    // Иконка (звездочка)
+    Icon(
+        imageVector = if (liked) ImageVector.vectorResource(id = R.drawable.ic_favorite_selected)
+        else ImageVector.vectorResource(id = R.drawable.ic_favorite),
+        contentDescription = null,
+        tint = animatedColor,
+        modifier = Modifier
+            .clickable { onLikeClick() }
+            .size(25.dp)
+
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContractedArticleItem(
+    image: String,
+    title: String,
+    liked: Boolean,
+    onLikeClick: () -> Unit,
+    onCardClick: () -> Unit
+) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(vertical = 5.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = Constants.MAIN_ELEVATION.dp
+        ),
+        shape = RoundedCornerShape(Constants.MAIN_CORNER.dp),
+        colors = CardDefaults.cardColors(
+            contentColor = colorResource(id = R.color.article_view_content),
+            containerColor = colorResource(id = R.color.background)
+        ),
+        onClick = onCardClick
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .background(brush = getImageBrush())
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = "Article View",
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentScale = ContentScale.FillWidth,
+                error = painterResource(R.drawable.placeholder)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(brush = getImageBrush())
+            )
+
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier
+                    .padding(Constants.MAIN_PADDING.dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+
+                Text(
+                    text = title,
+                    style = TextStyle(
+                        fontSize = Constants.MAIN_CONTENT_TEXT.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = monFamily,
+                        color = colorResource(id = R.color.contrast),
+                        textAlign = TextAlign.Start
+                    ),
+                    modifier = Modifier.weight(1f).
+                    padding(horizontal = 10.dp)
+                )
+
+                FavoriteIcon(liked = liked) {
+                    onLikeClick()
+                }
+
+            }
+
+        }
+
+    }
+
 }

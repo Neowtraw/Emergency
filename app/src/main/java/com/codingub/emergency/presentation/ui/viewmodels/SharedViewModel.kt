@@ -14,11 +14,11 @@ class SharedViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _sharedState = MutableStateFlow(Article())
+    private val _sharedState = MutableStateFlow("")
     val sharedState = _sharedState.asStateFlow()
 
-    fun updateState(article: Article) {
-        _sharedState.value = article
+    fun updateState(id: String) {
+        _sharedState.value = id
     }
 }
 

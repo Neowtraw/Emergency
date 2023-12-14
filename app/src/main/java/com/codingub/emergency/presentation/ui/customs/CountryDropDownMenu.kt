@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.codingub.emergency.R
 import com.codingub.emergency.common.Country
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +63,7 @@ fun CountryDropDownMenu(
                 if(isLabelVisible) {
                     Text(
                         stringResource(id = R.string.country_code),
+                        fontFamily = monFamily,
                         color = colorResource(id = R.color.contrast)
                     )
                 }
@@ -92,7 +94,7 @@ fun CountryDropDownMenu(
                                 painter = painterResource(id = country.flag),
                                 contentDescription = "Country Flag"
                             )
-                            Text(text = country.name)
+                            Text(text = country.name, fontFamily = monFamily)
                         }
 
                     },

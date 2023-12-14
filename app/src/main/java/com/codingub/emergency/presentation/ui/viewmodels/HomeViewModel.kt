@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.use_cases.GetFavoriteArticles
+import com.codingub.emergency.domain.use_cases.UpdateFavoriteArticle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getFavoriteArticles: GetFavoriteArticles
+    private val getFavoriteArticles: GetFavoriteArticles,
+    private val updateFavoriteArticle: UpdateFavoriteArticle
 ) : ViewModel() {
 
     private val _articles: MutableStateFlow<List<Article>> = MutableStateFlow(emptyList())
@@ -23,6 +25,12 @@ class HomeViewModel @Inject constructor(
 
     init {
         getArticles()
+    }
+
+    fun updateFavoriteArticles(id: String, liked: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateFavoriteArticle(id, liked)
+        }
     }
 
     private fun getArticles() {

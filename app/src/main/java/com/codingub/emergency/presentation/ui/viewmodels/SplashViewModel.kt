@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codingub.emergency.data.repos.DataStoreRepository
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
+import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.WELCOME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -21,14 +22,14 @@ class SplashViewModel @Inject constructor(
     private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
 
-    private val _startDestination: MutableState<String> = mutableStateOf(HOME)
+    private val _startDestination: MutableState<String> = mutableStateOf(HOME_BOARDING)
     val startDestination: State<String> = _startDestination
 
     init {
         viewModelScope.launch {
             repository.readOnBoardingState().collect { completed ->
                 if (completed) {
-                    _startDestination.value = HOME
+                    _startDestination.value = HOME_BOARDING
                 } else {
                     _startDestination.value = WELCOME
                 }

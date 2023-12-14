@@ -6,19 +6,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import com.codingub.emergency.domain.models.Article
+import com.codingub.emergency.domain.use_cases.GetArticle
+import com.codingub.emergency.domain.use_cases.UpdateFavoriteArticle
 import com.codingub.emergency.presentation.ui.screens.video.VideoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ArticleInfoViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    val player: Player
+    val player: Player,
+    private val updateFavoriteArticle: UpdateFavoriteArticle,
+    private val getArticle: GetArticle
 ) : ViewModel() {
+
+    private val _article = MutableStateFlow<Article>(Article())
+    val article = _article.asStateFlow()
 
     private val videoUri = savedStateHandle.getStateFlow("videoUri", "")
     val videoItem: StateFlow<VideoItem> = videoUri.map { uri ->
@@ -37,9 +49,17 @@ class ArticleInfoViewModel @Inject constructor(
         player.prepare()
     }
 
-    fun setVideoUri(uri: String) {
-        savedStateHandle["videoUri"] = uri
-        player.addMediaItem(MediaItem.fromUri(uri))
+    fun getSavedArticle(id: String) {
+        viewModelScope.launch {
+            getArticle(id).collectLatest {
+                _article.value = it
+            }
+        }
+    }
+
+    fun setVideoUri() {
+        savedStateHandle["videoUri"] = _article.value.videoUrl
+        player.addMediaItem(MediaItem.fromUri(_article.value.videoUrl!!))
     }
 
     fun playVideo(uri: Uri) {
@@ -51,6 +71,12 @@ class ArticleInfoViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         player.release()
+    }
+
+    fun updateArticleToFavorite(id: String, liked: Boolean) {
+        viewModelScope.launch {
+            updateFavoriteArticle(id, liked)
+        }
     }
 
 }

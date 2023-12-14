@@ -17,7 +17,6 @@
     <string name="weather">Погода</string>
 
     <string name="emergency_service">Вызовы экстренных служб</string>
-    <string name="user_statistic">Ваши данные:</string>
     <string name="user_gps">Ваше местоположение:</string>
 
     <string name="finish">Закончить</string>
@@ -45,6 +44,16 @@
 
     <!-- Countries END -->
 
+    <!-- Info Data START -->
+
+    <string name="title_your_data">Ваши данные</string>
+    <string name="title_home_address">Ваш домашний адрес</string>
+    <string name="title_current_address">Сейчас вы находитесь</string>
+    <string name="title_parent_phone">Телефон родителя</string>
+
+    <!-- Info Data END -->
+
+    <string name="title_own_data">Основная информация</string>
 
 
 </resources>

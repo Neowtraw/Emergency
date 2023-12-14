@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.codingub.emergency.presentation.ui.theme.monFamily
 
 
 const val OTP_VIEW_TYPE_UNDERLINE = 1
@@ -117,6 +118,7 @@ private fun CharView(
             text = char,
             color = Color.Black,
             modifier = modifier.wrapContentHeight(),
+            fontFamily = monFamily,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = charSize,
             textAlign = TextAlign.Center,

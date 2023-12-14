@@ -40,18 +40,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.codingub.emergency.R
-import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.HeaderText
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
+import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
-import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_LABEL_TEXT
 import com.codingub.emergency.presentation.ui.viewmodels.UserInfoViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -95,14 +93,15 @@ fun UserInfoScreen(
         )
 
         HeaderText(text = R.string.authorization)
-  //      Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
+        //      Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
         AddAuthText(text = R.string.authorization_add)
-   //     Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
+        //     Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
 
         if (state.usernameError != null) {
             Text(
                 text = state.usernameError, color = colorResource(id = R.color.error_text),
                 modifier = Modifier.align(Alignment.End),
+                fontFamily = monFamily,
                 fontSize = MAIN_LABEL_TEXT.sp
             )
         }
@@ -114,11 +113,12 @@ fun UserInfoScreen(
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.UsernameChanged(it))
         }
-  //      Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+        //      Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         if (state.addressError != null) {
             Text(
                 text = state.addressError, color = colorResource(id = R.color.error_text),
                 modifier = Modifier.align(Alignment.End),
+                fontFamily = monFamily,
                 fontSize = MAIN_LABEL_TEXT.sp
             )
         }
@@ -126,11 +126,12 @@ fun UserInfoScreen(
             str = state.address, label = "Address",
             keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Text),
             maxLines = 3,
+
             maxLength = 100
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.AddressChanged(it))
         }
-    //    Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+        //    Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         if (state.birthdayError != null) {
             Text(
                 text = state.birthdayError, color = colorResource(id = R.color.error_text),
@@ -144,17 +145,21 @@ fun UserInfoScreen(
             onTextChange = {
                 userInfoViewModel.onEvent(UserInfoEvent.BirthdayChanged(it))
             })
-    //    Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+        //    Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         if (state.parentNumberError != null) {
             Text(
                 text = state.parentNumberError, color = colorResource(id = R.color.error_text),
                 modifier = Modifier.align(Alignment.End),
+                fontFamily = monFamily,
                 fontSize = MAIN_LABEL_TEXT.sp
             )
         }
         UserText(
             str = state.parentNumber, label = "Parent Phone",
-            keyboardOptions = KeyboardOptions(autoCorrect = true, keyboardType = KeyboardType.Phone),
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = true,
+                keyboardType = KeyboardType.Phone
+            ),
             maxLines = 1,
             maxLength = 11
         ) {
@@ -162,6 +167,7 @@ fun UserInfoScreen(
         }
         Text(
             text = "Optional", color = colorResource(id = R.color.add_text),
+            fontFamily = monFamily,
             fontSize = MAIN_LABEL_TEXT.sp
         )
 
@@ -199,6 +205,7 @@ fun BirthdayView(
             Column {
                 Text(
                     text = "Birthday",
+                    fontFamily = monFamily,
                     fontSize = MAIN_LABEL_TEXT.sp,
                     color = colorResource(id = R.color.add_text)
                 )
@@ -250,6 +257,7 @@ fun CellView(
             text = str,
             color = colorResource(id = R.color.main_text),
             modifier = modifier.wrapContentHeight(),
+            fontFamily = monFamily,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = MAIN_CONTENT_TEXT.sp,
             textAlign = TextAlign.Center,
@@ -264,16 +272,23 @@ fun UserText(
     str: String,
     label: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-    maxLength : Int = 0,
+    maxLength: Int = 0,
     maxLines: Int = 1,
     onTextChange: (String) -> Unit
 ) {
-    OutlinedTextField(value = str,
+    OutlinedTextField(
+        value = str,
         modifier = modifier.fillMaxWidth(),
-        textStyle = TextStyle(color = colorResource(id = R.color.main_text)),
+        textStyle = TextStyle(
+            color = colorResource(id = R.color.main_text),
+            fontFamily = monFamily,
+        ),
         keyboardOptions = keyboardOptions,
+
         label = {
-            Text(text = label, color = colorResource(id = R.color.add_text))
+            Text(
+                text = label, color = colorResource(id = R.color.add_text), fontFamily = monFamily,
+            )
         },
         shape = RoundedCornerShape(Constants.MAIN_CORNER.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -281,9 +296,9 @@ fun UserText(
             unfocusedBorderColor = colorResource(id = R.color.text_field_outline)
         ),
         onValueChange = {
-                onTextChange(it.take(maxLength))
+            onTextChange(it.take(maxLength))
 
         },
         maxLines = maxLines
-        )
+    )
 }
