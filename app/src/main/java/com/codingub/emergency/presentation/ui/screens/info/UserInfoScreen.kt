@@ -40,9 +40,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.codingub.emergency.R
-import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.HeaderText
@@ -56,7 +54,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun UserInfoScreen(
-    navController: NavController,
+    onInfoRecorded: () -> Unit,
     userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
 
@@ -67,7 +65,7 @@ fun UserInfoScreen(
         userInfoViewModel.validationEvents.collectLatest { event ->
             when (event) {
                 is UserInfoViewModel.ValidationEvent.Success -> {
-                    navController.navigate(HOME)
+                    onInfoRecorded()
                 }
             }
         }

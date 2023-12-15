@@ -2,7 +2,6 @@ package com.codingub.emergency.presentation.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.codingub.emergency.domain.models.Article
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -21,4 +20,5 @@ class SharedViewModel(
         _sharedState.value = id
     }
 }
+
 

@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserVerificationScreen(
-    navController: NavController,
+    onVerificationFinished: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     var otp by rememberSaveable { mutableStateOf(("")) }
@@ -75,7 +75,7 @@ fun UserVerificationScreen(
                                 is ResultState.Success->{
                                     //isDialog = false
                                     Log.d("user", "successful")
-                                    navController.navigate(USER_INFO)
+                                    onVerificationFinished()
                                 }
                                 is ResultState.Error ->{
                                   //  isDialog = false

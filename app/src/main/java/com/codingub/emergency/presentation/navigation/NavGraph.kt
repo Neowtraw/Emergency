@@ -16,6 +16,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_BOARDING
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO_I
+import com.codingub.emergency.presentation.navigation.NavRoute.AUTH_BOARDING
+import com.codingub.emergency.presentation.navigation.NavRoute.HOME
+import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
+import com.codingub.emergency.presentation.navigation.NavRoute.INFO
+import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
+import com.codingub.emergency.presentation.navigation.NavRoute.USER_INFO
+import com.codingub.emergency.presentation.navigation.NavRoute.USER_VERIFICATION
+import com.codingub.emergency.presentation.navigation.NavRoute.WELCOME
 import com.codingub.emergency.presentation.ui.screens.ArticleInfoScreen
 import com.codingub.emergency.presentation.ui.screens.ArticleScreen
 import com.codingub.emergency.presentation.ui.screens.HomeScreen
@@ -39,89 +51,110 @@ fun setupNavGraph(
         startDestination = startDestination,
         modifier = androidx.compose.ui.Modifier.padding(padding)
     ) {
-        composable(route = NavRoute.INFO) {
+        composable(route = INFO) {
             InfoScreen()
         }
-        composable(route = NavRoute.WELCOME) {
-            WelcomeScreen(
-                navController = navController
-            )
-        }
 
-        composable(route = NavRoute.USER_AUTH) {
-            UserAuthScreen(
-                navController = navController,
-                activity = activity
-            )
-        }
-        composable(route = NavRoute.USER_INFO) {
-            UserInfoScreen(
-                navController = navController
-            )
-        }
-        composable(route = NavRoute.USER_VERIFICATION) {
-            UserVerificationScreen(
-                navController = navController
-            )
-        }
+        composable(route = WELCOME) {
+            WelcomeScreen(onFinishButtonClicked = {
+                navController.popBackStack()
+                navController.navigate(HOME)
+            })
 
-
+        }
 
         navigation(
-            startDestination = NavRoute.ARTICLES,
-            route = NavRoute.ARTICLE_BOARDING
+            startDestination = USER_AUTH,
+            route = AUTH_BOARDING
         ) {
-
-            composable(route = NavRoute.ARTICLE_INFO) { entry ->
-                val viewModel =
-                    entry.sharedViewModel<SharedViewModel>(navController = navController)
-                val state by viewModel.sharedState.collectAsStateWithLifecycle()
-
-                ArticleInfoScreen(
-                    navController = navController,
-                    id = state
+            composable(route = USER_AUTH) {
+                UserAuthScreen(
+                    activity = activity,
+                    onAuthFinished = {
+                        navController.navigate(USER_VERIFICATION)
+                    }
                 )
             }
 
-            composable(route = NavRoute.ARTICLES) { entry ->
-                val viewModel =
-                    entry.sharedViewModel<SharedViewModel>(navController = navController)
-               // val state by viewModel.sharedState.collectAsStateWithLifecycle()
+            composable(route = USER_VERIFICATION) {
+                UserVerificationScreen(
+                    onVerificationFinished = {
+                        navController.navigate(USER_INFO)
+                    }
+                )
+            }
 
-                ArticleScreen(
-                    onArticleClicked = {
-                        viewModel.updateState(id = it)
-                        navController.navigate(NavRoute.ARTICLE_INFO)
+            composable(route = USER_INFO) {
+                UserInfoScreen(
+                    onInfoRecorded = {
+                        navController.navigate(HOME_BOARDING) {
+                            popUpTo(AUTH_BOARDING) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }
         }
 
         navigation(
-            startDestination = NavRoute.HOME,
-            route = NavRoute.HOME_BOARDING
+            startDestination = HOME,
+            route = HOME_BOARDING
         ) {
 
-            composable(route = NavRoute.HOME) { entry ->
+            composable(route = HOME) { entry ->
                 val viewModel =
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
 
                 HomeScreen(
                     onArticleClicked = {
                         viewModel.updateState(id = it)
-                        navController.navigate(NavRoute.ARTICLE_INFO)
+                        navController.navigate(ARTICLE_INFO)
                     }
                 )
             }
 
-            composable(route = NavRoute.ARTICLE_INFO) { entry ->
+            composable(route = ARTICLE_INFO) { entry ->
                 val viewModel =
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
                 val state by viewModel.sharedState.collectAsStateWithLifecycle()
 
                 ArticleInfoScreen(
-                    navController = navController,
-                    id = state
+                    id = state,
+                    onBackClicked = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+        }
+
+        navigation(
+            startDestination = ARTICLES,
+            route = ARTICLE_BOARDING
+        ) {
+
+            composable(route = ARTICLE_INFO_I) { entry ->
+                val viewModel =
+                    entry.sharedViewModel<SharedViewModel>(navController = navController)
+                val state by viewModel.sharedState.collectAsStateWithLifecycle()
+
+                ArticleInfoScreen(
+                    id = state,
+                    onBackClicked = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable(route = ARTICLES) { entry ->
+                val viewModel =
+                    entry.sharedViewModel<SharedViewModel>(navController = navController)
+
+                ArticleScreen(
+                    onArticleClicked = {
+                        viewModel.updateState(id = it)
+                        navController.navigate(ARTICLE_INFO_I)
+                    }
                 )
             }
         }

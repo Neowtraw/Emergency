@@ -69,7 +69,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserAuthScreen(
-    navController: NavController,
+    onAuthFinished : () -> Unit,
     activity: Activity,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -126,14 +126,11 @@ fun UserAuthScreen(
                     ).collect {
                         when (it) {
                             is ResultState.Success -> {
-                                //     isDialog = false
                                 Log.d("user", it.data.toString())
-                                navController.navigate(USER_VERIFICATION)
-
+                                onAuthFinished()
                             }
 
                             is ResultState.Error -> {
-                                //    isDialog = false
                                 activity.showMsg(it.error.toString())
                                 Log.d("userErr", it.error.toString())
 

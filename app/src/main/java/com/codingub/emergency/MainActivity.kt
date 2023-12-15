@@ -3,10 +3,12 @@ package com.codingub.emergency
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -47,6 +49,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
@@ -72,6 +75,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var splashViewModel: SplashViewModel
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -96,8 +100,24 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 when (navBackStackEntry?.destination?.route) {
-                    WELCOME, USER_AUTH, USER_INFO, ARTICLE_INFO -> bottomBarState.value = false
-                    ARTICLES, HOME, INFO -> bottomBarState.value = true
+                    WELCOME, USER_AUTH, USER_INFO, ARTICLE_INFO -> {
+                        bottomBarState.value = false
+                    }
+
+                    HOME, HOME_BOARDING -> {
+                        bottomBarState.value = true
+                        selectedItemIndex = 0
+                    }
+
+                    ARTICLES, ARTICLE_BOARDING -> {
+                        bottomBarState.value = true
+                        selectedItemIndex = 1
+                    }
+
+                    INFO -> {
+                        bottomBarState.value = true
+                        selectedItemIndex = 2
+                    }
                 }
 
 
@@ -127,7 +147,6 @@ class MainActivity : ComponentActivity() {
                                                 modifier = Modifier
                                                     .fillMaxSize()
                                                     .noRippleClickable {
-                                                        selectedItemIndex = item.ordinal
                                                         navController.navigate(item.route)
                                                     },
                                                 contentAlignment = Alignment.Center
@@ -167,8 +186,8 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class NavigationBarItems(val route: String, val icon: Int) {
-    Home(route = HOME, icon = R.drawable.ic_home),
-    Articles(route = ARTICLES, icon = R.drawable.ic_articles),
+    Home(route = HOME_BOARDING, icon = R.drawable.ic_home),
+    Articles(route = ARTICLE_BOARDING, icon = R.drawable.ic_articles),
     Info(route = INFO, icon = R.drawable.ic_info)
 }
 

@@ -1,6 +1,5 @@
 package com.codingub.emergency.presentation.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -20,7 +19,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,17 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.codingub.emergency.R
-import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.ui.customs.FinishButton
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.utils.OnBoardingPage
@@ -51,11 +46,10 @@ import com.codingub.emergency.presentation.ui.viewmodels.WelcomeViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WelcomeScreen(
-    navController: NavHostController,
+    onFinishButtonClicked: () -> Unit,
     welcomeViewModel: WelcomeViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
     val pages = listOf(
         OnBoardingPage.FirstPage,
         OnBoardingPage.SecondPage,
@@ -96,8 +90,7 @@ fun WelcomeScreen(
             text = R.string.finish,
             onClick = {
                 welcomeViewModel.saveOnBoardingState(completed = true)
-                navController.popBackStack()
-                navController.navigate(HOME)
+                onFinishButtonClicked()
             })
     }
 }

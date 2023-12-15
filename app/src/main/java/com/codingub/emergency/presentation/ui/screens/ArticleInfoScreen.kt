@@ -56,13 +56,12 @@ import com.codingub.emergency.presentation.ui.viewmodels.ArticleInfoViewModel
 @Composable
 fun ArticleInfoScreen(
     id: String,
-    navController: NavController,
+    onBackClicked : () -> Unit,
     articleInfoViewModel: ArticleInfoViewModel = hiltViewModel()
 ) {
 
     // val videoItem by articleInfoViewModel.videoItem.collectAsState()
     // article.videoUrl?.let(articleInfoViewModel::setVideoUri)
-
 
     articleInfoViewModel.getSavedArticle(id)
     val article by articleInfoViewModel.article.collectAsState()
