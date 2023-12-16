@@ -3,26 +3,35 @@ package com.codingub.emergency.presentation.ui.screens
 import android.Manifest
 import android.os.Build
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +45,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -51,24 +59,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation.NavController
 import com.codingub.emergency.R
 import com.codingub.emergency.common.ResultState
 import com.codingub.emergency.domain.models.Service
+import com.codingub.emergency.presentation.ui.customs.ActionBar
 import com.codingub.emergency.presentation.ui.customs.CountryDropDownMenu
+import com.codingub.emergency.presentation.ui.customs.HeaderText
 import com.codingub.emergency.presentation.ui.customs.InfoContentText
 import com.codingub.emergency.presentation.ui.customs.InfoHeaderText
+import com.codingub.emergency.presentation.ui.customs.MemoView
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.screens.location.GeoUtil
 import com.codingub.emergency.presentation.ui.screens.location.PermissionRationaleDialog
 import com.codingub.emergency.presentation.ui.screens.location.PermissionRequestButton
 import com.codingub.emergency.presentation.ui.screens.location.RationaleState
 import com.codingub.emergency.presentation.ui.theme.monFamily
-import com.codingub.emergency.presentation.ui.utils.Constants.INFO_HEADER_TEXT
+import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER_ITEMS
-import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.codingub.emergency.presentation.ui.utils.ScreenState
 import com.codingub.emergency.presentation.ui.viewmodels.InfoViewModel
@@ -122,83 +131,88 @@ fun InfoScreen(
         }
     }
 
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
             .fillMaxSize()
             .background(getBackgroundBrush())
-            .padding(top = 40.dp)
-            .padding(horizontal = MAIN_PADDING.dp)
-
+            .padding(top = 40.dp, bottom = 70.dp)
     ) {
-        rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
 
-        Text(
-            text = stringResource(id = R.string.emergency_service),
-            fontSize = MAIN_HEADER_TEXT.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = colorResource(id = R.color.contrast)
-        )
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+            ActionBar(text = R.string.emergency_service)
 
-        CountryDropDownMenu(
-            code = country,
-            modifier = Modifier.fillMaxWidth(),
-            isLabelVisible = false,
-            value = country.name
-        ) {
-            infoViewModel.setCountry(it)
-        }
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
-        when (screenState) {
-            is ScreenState.Loading -> {}
-            is ScreenState.Success -> {
-                PhoneGrid(infoViewModel.services.collectAsState().value.data!!) {}
-            }
+            Column(Modifier.padding(horizontal = MAIN_PADDING.dp)) {
 
-            is ScreenState.Error -> {}
-        }
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        Text(
-            text = stringResource(id = R.string.title_your_data),
-            fontSize = MAIN_HEADER_TEXT.sp,
-            fontFamily = monFamily,
-            fontWeight = FontWeight.ExtraBold,
-            color = colorResource(id = R.color.contrast)
-            )
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
 
-        PermissionRequestButton(
-            isGranted = fineLocationPermissionState.allPermissionsGranted,
-            title = "Precise location access",
-            onClick = {
-                if (fineLocationPermissionState.shouldShowRationale) {
-                    rationaleState = RationaleState(
-                        "Request Precise Location",
-                        "In order to use this feature please grant access by accepting " + "the location permission dialog." + "\n\nWould you like to continue?",
-                    ) { proceed ->
-                        if (proceed) {
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+                CountryDropDownMenu(
+                    code = country,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = MAIN_PADDING.dp),
+                    isLabelVisible = false,
+                    value = country.name
+                ) {
+                    infoViewModel.setCountry(it)
+                }
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+                when (screenState) {
+                    is ScreenState.Loading -> {}
+                    is ScreenState.Success -> {
+                        PhoneList(infoViewModel.services.collectAsState().value.data!!) {}
+                        //     PhoneGrid(infoViewModel.services.collectAsState().value.data!!) {}
+                    }
+
+                    is ScreenState.Error -> {}
+                }
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                HeaderText(
+                    text = R.string.title_your_data, color = R.color.contrast
+                )
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                InfoHeaderText(text = stringResource(id = R.string.title_current_address))
+
+                PermissionRequestButton(
+                    isGranted = fineLocationPermissionState.allPermissionsGranted,
+                    title = "Precise location access",
+                    onClick = {
+                        if (fineLocationPermissionState.shouldShowRationale) {
+                            rationaleState = RationaleState(
+                                "Request Precise Location",
+                                "In order to use this feature please grant access by accepting " + "the location permission dialog." + "\n\nWould you like to continue?",
+                            ) { proceed ->
+                                if (proceed) {
+                                    fineLocationPermissionState.launchMultiplePermissionRequest()
+                                }
+                                rationaleState = null
+                            }
+                        } else {
                             fineLocationPermissionState.launchMultiplePermissionRequest()
                         }
-                        rationaleState = null
+                    },
+                    onGranted = {
+                        LocationUpdatesContent(true)
                     }
-                } else {
-                    fineLocationPermissionState.launchMultiplePermissionRequest()
-                }
-            },
-            onGranted = {
-                LocationUpdatesContent(true)
-            }
-        )
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        InfoHeaderText(text = stringResource(id = R.string.title_home_address))
-        InfoContentText(text = infoViewModel.getUser().address)
+                )
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                InfoHeaderText(text = stringResource(id = R.string.title_home_address))
+                InfoContentText(text = infoViewModel.getUser().address)
 
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        if (infoViewModel.getUser().parentNumber != null) {
-            InfoHeaderText(text = stringResource(id = R.string.title_parent_phone))
-            InfoContentText(text = infoViewModel.getUser().parentNumber!!)
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                if (infoViewModel.getUser().parentNumber != null) {
+                    InfoHeaderText(text = stringResource(id = R.string.title_parent_phone))
+                    InfoContentText(text = infoViewModel.getUser().parentNumber!!)
+                }
+                Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                MemoView(R.string.title_service_algorithm, R.string.service_algorithm)
+            }
         }
     }
 }
@@ -247,7 +261,6 @@ fun LocationUpdatesContent(usePreciseLocation: Boolean) {
     }
 
     Column {
-        InfoHeaderText(text = stringResource(id = R.string.title_current_address))
         InfoContentText(text = locationUpdates)
     }
 
@@ -297,22 +310,19 @@ fun LocationUpdatesEffect(
 
 
 @Composable
-private fun PhoneGrid(phones: List<Service>, onPhoneClicked: () -> Unit) {
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
-        verticalArrangement = Arrangement.spacedBy(MAIN_DIVIDER_ITEMS.dp)
-    ) {
-        items(phones) { phone ->
+fun PhoneList(phones: List<Service>, onPhoneClicked: () -> Unit) {
+    Column {
+        (1 until phones.size).forEach {
             PhoneItem(
-                title = phone.name,
-                phone = phone.phone,
+                title = phones[it].name,
+                phone = phones[it].phone,
                 onIconClicked = { onPhoneClicked() }
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PhoneItem(
     title: String,
@@ -321,7 +331,7 @@ private fun PhoneItem(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -347,22 +357,56 @@ private fun PhoneItem(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(colorResource(id = R.color.call))
-                .clickable { onIconClicked() },
-            contentAlignment = Alignment.Center
+        Card(
+            modifier = Modifier.size(40.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
+            ),
+            shape = RoundedCornerShape(Constants.MAIN_CORNER.dp),
+            colors = CardDefaults.cardColors(
+                contentColor = colorResource(id = R.color.call),
+                containerColor = colorResource(id = R.color.call)
+            ),
+            onClick = { onIconClicked() }
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_call),
-                tint = colorResource(id = R.color.call_icon),
-                contentDescription = "Call",
-                modifier = Modifier.size(24.dp)
-            )
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_call),
+                    tint = colorResource(id = R.color.call_icon),
+                    contentDescription = "Call",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
+
+//@Composable
+//private fun PhoneGrid(phones: List<Service>, onPhoneClicked: () -> Unit) {
+//
+//    LazyColumn(
+//        contentPadding = PaddingValues(vertical = MAIN_PADDING.dp),
+//        verticalArrangement = Arrangement.spacedBy(MAIN_DIVIDER_ITEMS.dp)
+//    ) {
+//        phoneList(phones, onPhoneClicked)
+//        item {
+//            PhoneList(phones = phones, onPhoneClicked)
+//        }
+//    }
+//}
+
+//fun LazyListScope.phoneList(phones: List<Service>, onPhoneClicked: () -> Unit) {
+//    items(phones) { phone ->
+//        PhoneItem(
+//            title = phone.name,
+//            phone = phone.phone,
+//            onIconClicked = { onPhoneClicked() }
+//        )
+//    }
+//}
 
 

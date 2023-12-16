@@ -16,16 +16,17 @@ import com.codingub.emergency.presentation.ui.utils.Constants
 
 @Composable
 fun HeaderText(
-    @StringRes text: Int
+    @StringRes text: Int,
+    color : Int = R.color.main_text
 ) {
     Text(
         text = stringResource(id = text),
         modifier = Modifier
             .fillMaxWidth(),
         textAlign = TextAlign.Center,
-        fontWeight = FontWeight.ExtraBold,
+        fontWeight = FontWeight.SemiBold,
         fontFamily = monFamily,
-        color = colorResource(id = R.color.main_text),
+        color = colorResource(id = color),
         fontSize = Constants.MAIN_HEADER_TEXT.sp
     )
 }
@@ -47,21 +48,23 @@ fun AddAuthText(
 }
 
 @Composable
-fun InfoHeaderText(text: String, modifier: Modifier = Modifier) {
+fun InfoHeaderText(text: String, modifier: Modifier = Modifier,
+                   color: Int = R.color.main_text) {
     Text(text = text,
         modifier = modifier,
-        color = colorResource(id = R.color.main_text),
+        color = colorResource(id = color),
         fontSize = Constants.INFO_HEADER_TEXT.sp,
         fontFamily = monFamily,
-        fontWeight = FontWeight.Medium)
+        fontWeight = FontWeight.SemiBold)
 }
 
 @Composable
-fun InfoContentText(text: String) {
+fun InfoContentText(text: String, modifier : Modifier = Modifier) {
     Text(text = text,
         color = colorResource(id = R.color.main_text),
         fontSize = Constants.MAIN_CONTENT_TEXT.sp,
         fontFamily = monFamily,
+        modifier = modifier,
         fontWeight = FontWeight.Normal)
 }
 

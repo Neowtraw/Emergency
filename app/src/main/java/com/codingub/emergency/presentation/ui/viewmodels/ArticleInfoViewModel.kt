@@ -53,11 +53,12 @@ class ArticleInfoViewModel @Inject constructor(
         viewModelScope.launch {
             getArticle(id).collectLatest {
                 _article.value = it
+                setVideoUri()
             }
         }
     }
 
-    fun setVideoUri() {
+    private fun setVideoUri() {
         savedStateHandle["videoUri"] = _article.value.videoUrl
         player.addMediaItem(MediaItem.fromUri(_article.value.videoUrl!!))
     }

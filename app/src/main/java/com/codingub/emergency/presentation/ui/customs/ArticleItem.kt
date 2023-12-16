@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +43,7 @@ import coil.compose.AsyncImage
 import com.codingub.emergency.R
 import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,24 +89,11 @@ fun ArticleItem(
             contentScale = ContentScale.FillWidth,
             error = painterResource(R.drawable.placeholder)
         )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(colorResource(id = R.color.background))
-                .padding(end = Constants.MAIN_PADDING.dp)
-
-
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(
-                        Constants.MAIN_PADDING.dp,
-                        Constants.MAIN_PADDING.dp,
-                        0.dp,
-                        Constants.MAIN_PADDING.dp
-                    )
+        
+        Column(Modifier.background(colorResource(id = R.color.background))
+            .padding(MAIN_PADDING.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title,
@@ -114,33 +104,38 @@ fun ArticleItem(
                         color = colorResource(id = R.color.contrast),
                         textAlign = TextAlign.Center
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                 )
-
-                Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
-
-                Text(
-                    text = summary,
-                    style = TextStyle(
-                        fontSize = Constants.MAIN_ADDITIONAL_TEXT.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = monFamily,
-                        color = colorResource(id = R.color.main_text),
-                        textAlign = TextAlign.Start
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3
-                )
+                FavoriteIcon(liked = liked, onLikeClick)
             }
-            FavoriteIcon(liked = liked, onLikeClick)
+
+            Text(
+                text = summary,
+                style = TextStyle(
+                    fontSize = Constants.MAIN_ADDITIONAL_TEXT.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = monFamily,
+                    color = colorResource(id = R.color.main_text),
+                    textAlign = TextAlign.Start
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3
+            )
         }
     }
 }
 
 @Composable
-fun FavoriteIcon(liked: Boolean,
-                 onLikeClick: () -> Unit) {
+fun FavoriteIcon(
+    liked: Boolean,
+    onLikeClick: () -> Unit
+) {
+
+    val interactionSource = remember { MutableInteractionSource() }
+
     val animatedColor by animateColorAsState(
         targetValue = if (liked) colorResource(id = R.color.article_favorite_view_selected)
         else colorResource(id = R.color.article_favorite_view_unselected),
@@ -155,7 +150,12 @@ fun FavoriteIcon(liked: Boolean,
         contentDescription = null,
         tint = animatedColor,
         modifier = Modifier
-            .clickable { onLikeClick() }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                onLikeClick()
+            }
             .size(25.dp)
 
     )
@@ -223,8 +223,9 @@ fun ContractedArticleItem(
                         color = colorResource(id = R.color.contrast),
                         textAlign = TextAlign.Start
                     ),
-                    modifier = Modifier.weight(1f).
-                    padding(horizontal = 10.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 10.dp)
                 )
 
                 FavoriteIcon(liked = liked) {

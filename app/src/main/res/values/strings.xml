@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Emergency</string>
+    <string name="app_name" translatable="false">Emergency</string>
 
     <string name="search">search</string>
     <string name="phone_number">Phone Number</string>
@@ -54,6 +54,21 @@
     <!-- Info Data END -->
 
     <string name="title_own_data">Основная информация</string>
+
+    <!-- MEMO START -->
+    <string name="title_algorithm_help">Алгоритм указания первой помощи</string>
+    <string name="algorithm_help" translatable="false">algorithm_help</string>
+
+    <string name="title_unconscious_victim">Если пострадавший без сознания</string>
+    <string name="unconscious_victim" translatable="false">unconscious_victim</string>
+
+    <string name="title_conscious_victim">Если пострадавший в сознании уточните у него</string>
+    <string name="conscious_victim" translatable="false">conscious_victim</string>
+
+    <string name="title_service_algorithm">Если пострадавший в сознании уточните у него</string>
+    <string name="service_algorithm" translatable="false">service_algorithm</string>
+
+    <!-- MEMO END -->
 
 
 </resources>

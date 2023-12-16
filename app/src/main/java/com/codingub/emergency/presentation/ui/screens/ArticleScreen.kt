@@ -10,6 +10,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -185,6 +186,7 @@ private fun Search(
             width = 3f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
+        val interactionSource = remember { MutableInteractionSource() }
         val contrastColor = colorResource(id = R.color.contrast)
 
         Canvas(
@@ -238,8 +240,11 @@ private fun Search(
                 tint = colorResource(id = R.color.contrast_icons),
                 modifier = Modifier
                     .padding(MAIN_PADDING.dp)
-                    .size(20.dp)
-                    .clickable {
+                    //.size(20.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
                         onIconClicked()
                     }
             )
@@ -292,6 +297,7 @@ private fun TabbedItem(
                     },
                     selected = selectedTabIndex == index,
                     onClick = {
+
                         selectedTabIndex = index
                         onTabSelected(element.name)
                     },

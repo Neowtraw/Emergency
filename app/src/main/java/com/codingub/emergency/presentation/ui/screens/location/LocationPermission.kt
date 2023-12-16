@@ -2,6 +2,8 @@ package com.codingub.emergency.presentation.ui.screens.location
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,6 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.codingub.emergency.presentation.ui.theme.monFamily
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionState
@@ -80,9 +86,13 @@ fun PermissionRequestButton(
     if (isGranted) {
         onGranted()
     } else {
-        Button(onClick = onClick) {
-            Text("Request $title")
+        Box(modifier = Modifier
+            .fillMaxWidth()) {
+            Button(onClick = onClick, modifier = Modifier.align(Alignment.Center)) {
+                Text("Запросить $title", fontFamily = monFamily, fontWeight = FontWeight.Normal)
+            }
         }
+
     }
 }
 

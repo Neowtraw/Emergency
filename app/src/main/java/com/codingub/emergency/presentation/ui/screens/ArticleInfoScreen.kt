@@ -1,5 +1,7 @@
 package com.codingub.emergency.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +33,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -38,13 +40,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.ui.PlayerView
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.codingub.emergency.R
 import com.codingub.emergency.presentation.ui.customs.FavoriteIcon
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.customs.getImageBrush
-import com.codingub.emergency.presentation.ui.theme.EmergencyTheme
 import com.codingub.emergency.presentation.ui.theme.monFamily
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ADDITIONAL_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
@@ -52,11 +52,13 @@ import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.codingub.emergency.presentation.ui.viewmodels.ArticleInfoViewModel
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.launch
 
 @Composable
 fun ArticleInfoScreen(
     id: String,
-    onBackClicked : () -> Unit,
+    onBackClicked: () -> Unit,
     articleInfoViewModel: ArticleInfoViewModel = hiltViewModel()
 ) {
 
@@ -79,6 +81,12 @@ fun ArticleInfoScreen(
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler {
+        println("back pressed")
+        onBackClicked()
     }
 
     Box(
@@ -117,8 +125,10 @@ fun ArticleInfoScreen(
                 .padding(top = 200.dp, bottom = 50.dp)
                 .padding(horizontal = MAIN_PADDING.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = article.title, fontSize = MAIN_HEADER_TEXT.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -176,16 +186,5 @@ fun ArticleInfoScreen(
                     .aspectRatio(16 / 9f)
             )
         }
-
-    }
-
-}
-
-
-@Composable
-@Preview(device = "id:pixel_4a", showBackground = true)
-private fun MainScreenPreview() {
-    EmergencyTheme {
-        //   ArticleInfoScreen(navController = rememberNavController())
     }
 }

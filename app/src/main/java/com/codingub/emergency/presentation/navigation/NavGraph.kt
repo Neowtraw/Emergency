@@ -3,6 +3,8 @@ package com.codingub.emergency.presentation.navigation
 import android.app.Activity
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -51,14 +53,39 @@ fun setupNavGraph(
         startDestination = startDestination,
         modifier = androidx.compose.ui.Modifier.padding(padding)
     ) {
-        composable(route = INFO) {
+        composable(route = INFO,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(700)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(700)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                    animationSpec = tween(700)
+                )
+            }) {
             InfoScreen()
         }
+
 
         composable(route = WELCOME) {
             WelcomeScreen(onFinishButtonClicked = {
                 navController.popBackStack()
-                navController.navigate(HOME)
+                navController.navigate(AUTH_BOARDING)
             })
 
         }
@@ -102,7 +129,31 @@ fun setupNavGraph(
             route = HOME_BOARDING
         ) {
 
-            composable(route = HOME) { entry ->
+            composable(route = HOME,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                        animationSpec = tween(700)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                }) { entry ->
                 val viewModel =
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
 
@@ -114,7 +165,31 @@ fun setupNavGraph(
                 )
             }
 
-            composable(route = ARTICLE_INFO) { entry ->
+            composable(route = ARTICLE_INFO,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                }) { entry ->
                 val viewModel =
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
                 val state by viewModel.sharedState.collectAsStateWithLifecycle()
@@ -122,7 +197,11 @@ fun setupNavGraph(
                 ArticleInfoScreen(
                     id = state,
                     onBackClicked = {
-                        navController.popBackStack()
+                        navController.navigate(ARTICLES) {
+                            popUpTo(HOME_BOARDING) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }
@@ -133,7 +212,31 @@ fun setupNavGraph(
             route = ARTICLE_BOARDING
         ) {
 
-            composable(route = ARTICLE_INFO_I) { entry ->
+            composable(route = ARTICLE_INFO_I,
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                        animationSpec = tween(700)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                        animationSpec = tween(700)
+                    )
+                }) { entry ->
                 val viewModel =
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
                 val state by viewModel.sharedState.collectAsStateWithLifecycle()
