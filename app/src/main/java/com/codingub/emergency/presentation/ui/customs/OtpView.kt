@@ -20,12 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.codingub.emergency.R
 import com.codingub.emergency.presentation.ui.theme.monFamily
 
 
@@ -36,7 +38,7 @@ const val OTP_VIEW_TYPE_BORDER = 2
 fun OtpView(
     modifier: Modifier = Modifier,
     otpText: String = "",
-    charColor: Color = Color(0XFFE8E8E8),
+    charColor: Color = colorResource(id = R.color.contrast),
     charBackground: Color = Color.Transparent,
     charSize: TextUnit = 20.sp,
     containerSize: Dp = charSize.value.dp * 2,

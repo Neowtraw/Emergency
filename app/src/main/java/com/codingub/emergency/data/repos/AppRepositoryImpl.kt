@@ -1,7 +1,7 @@
 package com.codingub.emergency.data.repos
 
 import android.util.Log
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.data.local.datasource.LocalDataSource
 import com.codingub.emergency.data.remote.datasource.FireDataSource
 import com.codingub.emergency.data.utils.NetworkBoundResultState

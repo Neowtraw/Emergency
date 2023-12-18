@@ -1,12 +1,10 @@
 package com.codingub.emergency.data.remote.datasource
 
 import android.util.Log
-import com.codingub.emergency.data.remote.responses.ArticleResponse
-import com.codingub.emergency.data.remote.responses.ServiceResponse
-import com.codingub.emergency.data.utils.Constants
+import com.codingub.emergency.data.remote.models.ArticleResponse
+import com.codingub.emergency.data.remote.models.ServiceResponse
 import com.codingub.emergency.data.utils.Constants.ARTICLE_COLLECTION
 import com.codingub.emergency.data.utils.Constants.SERVICE_COLLECTION
-import com.codingub.emergency.data.utils.isSimilar
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.models.Service
 import com.google.firebase.firestore.FirebaseFirestore

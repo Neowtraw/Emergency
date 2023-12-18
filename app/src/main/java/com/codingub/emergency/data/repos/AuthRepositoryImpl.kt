@@ -1,7 +1,7 @@
 package com.codingub.emergency.data.repos
 
 import android.app.Activity
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.repos.AuthRepository
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth

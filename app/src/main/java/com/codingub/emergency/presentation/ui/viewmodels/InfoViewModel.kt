@@ -2,8 +2,8 @@ package com.codingub.emergency.presentation.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codingub.emergency.common.Country
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.Country
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.data.repos.DataStoreRepository
 import com.codingub.emergency.domain.models.Service
 import com.codingub.emergency.domain.models.User

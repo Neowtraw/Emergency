@@ -1,6 +1,6 @@
 package com.codingub.emergency.data.utils
 
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll

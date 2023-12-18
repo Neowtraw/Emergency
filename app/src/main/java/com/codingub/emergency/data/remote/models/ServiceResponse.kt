@@ -1,4 +1,4 @@
-package com.codingub.emergency.data.remote.responses
+package com.codingub.emergency.data.remote.models
 
 import com.codingub.emergency.domain.models.Service
 

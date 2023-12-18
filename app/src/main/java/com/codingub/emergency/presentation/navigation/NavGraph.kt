@@ -158,6 +158,13 @@ fun setupNavGraph(
                     entry.sharedViewModel<SharedViewModel>(navController = navController)
 
                 HomeScreen(
+                    onBoxClicked = {
+                        navController.navigate(ARTICLE_BOARDING) {
+//                            popUpTo(AUTH_BOARDING) {
+//                                inclusive = true
+//                            }
+                        }
+                    },
                     onArticleClicked = {
                         viewModel.updateState(id = it)
                         navController.navigate(ARTICLE_INFO)

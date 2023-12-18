@@ -73,7 +73,7 @@ fun UserInfoScreen(
 
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState(), reverseScrolling = true)
+        //    .verticalScroll(rememberScrollState(), reverseScrolling = true)
             .fillMaxSize()
             .background(brush = getBackgroundBrush())
             .statusBarsPadding()
@@ -91,9 +91,7 @@ fun UserInfoScreen(
         )
 
         HeaderText(text = R.string.authorization)
-        //      Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
         AddAuthText(text = R.string.authorization_add)
-        //     Spacer(modifier = Modifier.height(Constants.MAIN_DIVIDER_ITEMS.dp))
 
         if (state.usernameError != null) {
             Text(
@@ -111,7 +109,6 @@ fun UserInfoScreen(
         ) {
             userInfoViewModel.onEvent(UserInfoEvent.UsernameChanged(it))
         }
-        //      Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         if (state.addressError != null) {
             Text(
                 text = state.addressError, color = colorResource(id = R.color.error_text),

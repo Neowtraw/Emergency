@@ -16,13 +16,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -68,8 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codingub.emergency.R
-import com.codingub.emergency.common.ArticleType
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ArticleType
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.presentation.ui.customs.ArticleItem
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
@@ -118,10 +116,7 @@ fun ArticleScreen(
                 textValue = text
                 articleViewModel.searchArticlesByAlt(alt = text)
             }, onIconClicked = {})
-        Spacer(modifier = Modifier.height(20.dp))
-        TabbedItem {
-            articleViewModel.searchArticlesByAlt(alt = it)
-        }
+ //       Spacer(modifier = Modifier.height(20.dp))
 
         when (screenState) {
             ScreenState.Loading -> {}
@@ -133,6 +128,9 @@ fun ArticleScreen(
                     },
                     onCardClick = {
                         onArticleClicked(it.id)
+                    },
+                    onTabSelected = {
+                        articleViewModel.searchArticlesByAlt(alt = it)
                     })
             }
 
@@ -146,7 +144,8 @@ fun ArticleScreen(
 private fun ArticleGrid(
     articles: List<Article>,
     onLikeClick: (id: String, liked: Boolean) -> Unit,
-    onCardClick: (Article) -> Unit
+    onCardClick: (Article) -> Unit,
+    onTabSelected: (String) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(
@@ -154,6 +153,11 @@ private fun ArticleGrid(
             bottom = 80.dp
         )
     ) {
+        item {
+            TabbedItem {
+                onTabSelected(it)
+            }
+        }
         items(articles) { article ->
             ArticleItem(
                 image = article.imageUrl,

@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.codingub.emergency.common.Country
+import com.codingub.emergency.core.Country
 import com.codingub.emergency.domain.models.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -29,6 +29,14 @@ class DataStoreRepository(context: Context) {
     }
 
     private val dataStore = context.dataStore
+
+    /*
+        Last News Link
+     */
+
+    suspend fun saveLastNewsLink() {
+
+    }
 
     /*
         Language

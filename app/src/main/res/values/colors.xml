@@ -18,6 +18,7 @@
 
     <color name="main_text">#144A60</color>
     <color name="add_text">#36728A</color>
+    <color name="warn_text">#5593AC</color>
     <color name="error_text">#AB2539</color>
 
     <color name="text_input">#50020202</color>

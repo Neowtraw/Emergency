@@ -2,25 +2,17 @@ package com.codingub.emergency.presentation.ui.screens
 
 import android.app.Activity
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -31,25 +23,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.codingub.emergency.R
-import com.codingub.emergency.common.Country
-import com.codingub.emergency.common.ResultState
-import com.codingub.emergency.presentation.navigation.NavRoute.USER_VERIFICATION
+import com.codingub.emergency.core.Country
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.presentation.ui.customs.AddAuthText
 import com.codingub.emergency.presentation.ui.customs.CountryDropDownMenu
 import com.codingub.emergency.presentation.ui.customs.FinishButton
@@ -107,7 +95,7 @@ fun UserAuthScreen(
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         CountryDropDownMenu(code = code) {
             code = it
-            mask = "${code.code} (00) 000 00 00"
+            mask = "${code.code} (000) 000 00 00"
         }
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
@@ -115,7 +103,7 @@ fun UserAuthScreen(
             modifier = Modifier.padding(top = 50.dp),
             text = R.string.finish,
             visible = {
-                phoneNumber.count() == 9
+                phoneNumber.count() >= 9
             },
             onClick = {
                 scope.launch(Dispatchers.Main) {

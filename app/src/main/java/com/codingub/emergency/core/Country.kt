@@ -1,7 +1,6 @@
-package com.codingub.emergency.common
+package com.codingub.emergency.core
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import com.codingub.emergency.R
 
 enum class Country(val code: String, val language: String, @DrawableRes val flag: Int) {

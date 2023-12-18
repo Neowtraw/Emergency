@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codingub.emergency.data.repos.DataStoreRepository
 import com.codingub.emergency.domain.use_cases.SetUserInformation
 import com.codingub.emergency.domain.use_cases.validation.ValidateBirthday
 import com.codingub.emergency.domain.use_cases.validation.ValidateGeneral
@@ -27,10 +28,12 @@ class UserInfoViewModel @Inject constructor(
     private val setUserInformation: SetUserInformation,
     private val validateGeneral: ValidateGeneral,
     private val validateParentNumber: ValidateParentNumber,
-    private val validateBirthday: ValidateBirthday
+    private val validateBirthday: ValidateBirthday,
+    private val repository: DataStoreRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(UserInfoState())
+
 
     private val validationChannel = Channel<ValidationEvent>()
     val validationEvents = validationChannel.receiveAsFlow()

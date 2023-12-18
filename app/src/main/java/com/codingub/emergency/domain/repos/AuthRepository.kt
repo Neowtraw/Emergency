@@ -1,7 +1,7 @@
 package com.codingub.emergency.domain.repos
 
 import android.app.Activity
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

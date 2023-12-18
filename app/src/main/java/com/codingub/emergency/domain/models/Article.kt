@@ -12,7 +12,7 @@ data class Article(
     val imageUrl: String = "",
     val videoUrl: String? = null,
     val phone: String? = null,
-    val liked: Boolean = false
+    var liked: Boolean = false
 ) {
 
     fun toArticleEntity() : ArticleEntity {

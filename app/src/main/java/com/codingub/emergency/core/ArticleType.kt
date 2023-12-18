@@ -1,4 +1,4 @@
-package com.codingub.emergency.common
+package com.codingub.emergency.core
 
 import androidx.annotation.StringRes
 import com.codingub.emergency.R

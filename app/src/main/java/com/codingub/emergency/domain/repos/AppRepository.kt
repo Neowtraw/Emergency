@@ -1,6 +1,6 @@
 package com.codingub.emergency.domain.repos
 
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow

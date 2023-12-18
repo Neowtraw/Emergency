@@ -2,7 +2,7 @@ package com.codingub.emergency.presentation.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codingub.emergency.common.ResultState
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.use_cases.GetArticles
 import com.codingub.emergency.domain.use_cases.SearchArticles

@@ -1,4 +1,4 @@
-package com.codingub.emergency.common
+package com.codingub.emergency.core
 
 sealed class ResultState<T>(
     val data: T? = null,
