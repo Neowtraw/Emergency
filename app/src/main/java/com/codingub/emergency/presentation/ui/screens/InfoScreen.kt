@@ -3,6 +3,8 @@ package com.codingub.emergency.presentation.ui.screens
 import android.Manifest
 import android.os.Build
 import android.os.Looper
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
@@ -176,7 +178,8 @@ fun InfoScreen(
                         if (fineLocationPermissionState.shouldShowRationale) {
                             rationaleState = RationaleState(
                                 "Request Precise Location",
-                                "In order to use this feature please grant access by accepting " + "the location permission dialog." + "\n\nWould you like to continue?",
+                                "In order to use this feature please grant access by accepting " +
+                                        "the location permission dialog." + "\n\nWould you like to continue?",
                             ) { proceed ->
                                 if (proceed) {
                                     fineLocationPermissionState.launchMultiplePermissionRequest()

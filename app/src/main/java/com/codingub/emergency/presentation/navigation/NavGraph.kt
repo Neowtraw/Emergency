@@ -39,6 +39,7 @@ import com.codingub.emergency.presentation.ui.screens.UserVerificationScreen
 import com.codingub.emergency.presentation.ui.screens.WelcomeScreen
 import com.codingub.emergency.presentation.ui.screens.info.UserInfoScreen
 import com.codingub.emergency.presentation.ui.viewmodels.SharedViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -48,6 +49,8 @@ fun setupNavGraph(
     padding: PaddingValues,
     activity: Activity
 ) {
+
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -160,9 +163,6 @@ fun setupNavGraph(
                 HomeScreen(
                     onBoxClicked = {
                         navController.navigate(ARTICLE_BOARDING) {
-//                            popUpTo(AUTH_BOARDING) {
-//                                inclusive = true
-//                            }
                         }
                     },
                     onArticleClicked = {

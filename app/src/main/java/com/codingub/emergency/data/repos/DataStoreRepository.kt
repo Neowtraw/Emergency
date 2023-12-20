@@ -26,6 +26,7 @@ class DataStoreRepository(context: Context) {
         val onUserKey = stringPreferencesKey(name = "on_user")
         val onVerificationCodeKey = stringPreferencesKey(name = "on_verification_code")
         val onCountryKey = stringPreferencesKey(name = "on_country_key")
+        val onLastNewsLinkKey = stringPreferencesKey(name = "on_last_news_link_key")
     }
 
     private val dataStore = context.dataStore
@@ -34,8 +35,24 @@ class DataStoreRepository(context: Context) {
         Last News Link
      */
 
-    suspend fun saveLastNewsLink() {
+    suspend fun saveLastNewsLink(link: String) {
+        dataStore.edit {  preferences ->
+            preferences[PreferencesKey.onLastNewsLinkKey] = link
+        }
+    }
 
+    fun readLastNewsLink() : Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map {preferences ->
+                preferences[PreferencesKey.onLastNewsLinkKey] ?: ""
+            }
     }
 
     /*

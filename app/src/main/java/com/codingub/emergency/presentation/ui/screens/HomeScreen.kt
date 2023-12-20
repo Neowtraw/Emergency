@@ -1,9 +1,10 @@
 package com.codingub.emergency.presentation.ui.screens
 
 
+import android.Manifest
+import android.os.Build
 import android.util.Log
-import androidx.annotation.StringRes
-import androidx.compose.animation.core.AnimationSpec
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -23,8 +24,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,62 +40,72 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.codingub.emergency.R
-import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
 import com.codingub.emergency.presentation.ui.customs.ActionBar
 import com.codingub.emergency.presentation.ui.customs.ContractedArticleItem
-import com.codingub.emergency.presentation.ui.customs.InfoContentText
 import com.codingub.emergency.presentation.ui.customs.InfoHeaderText
 import com.codingub.emergency.presentation.ui.customs.MemoView
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.theme.monFamily
-import com.codingub.emergency.presentation.ui.utils.AssetUtil.getText
 import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.codingub.emergency.presentation.ui.viewmodels.HomeViewModel
-import kotlinx.coroutines.delay
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalFoundationApi::class)
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     onArticleClicked: (String) -> Unit,
     onBoxClicked: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
+    val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
 
     Column(
         Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(getBackgroundBrush())
-            .padding(top = 40.dp,  bottom = 60.dp)
+            .padding(top = 40.dp, bottom = 60.dp)
     ) {
 
         val articles by homeViewModel.articles.collectAsState()
         val interactionSource = remember { MutableInteractionSource() }
-
         var columnHeight by remember {
             Log.d("articles", articles.size.toString())
             mutableStateOf(100.dp)
         }
-
-
-        val animatedHeight by animateDpAsState(targetValue = columnHeight,
+        val animatedHeight by animateDpAsState(
+            targetValue = columnHeight,
             label = "",
-            animationSpec = tween(durationMillis = 500))
+            animationSpec = tween(durationMillis = 500)
+        )
+
+        DisposableEffect(LocalContext.current) {
+            if (notificationPermissionState.status.isGranted) {
+                homeViewModel.initializeWorkManager()
+            }
+            else {
+                notificationPermissionState.launchPermissionRequest()
+            }
+            onDispose {}
+        }
 
         LaunchedEffect(LocalContext.current) {
             homeViewModel.articles.collectLatest {
-                if(articles.isEmpty()) {
+                if (articles.isEmpty()) {
                     columnHeight = 100.dp
                     return@collectLatest
                 }
@@ -109,14 +122,16 @@ fun HomeScreen(
         )
         Spacer(modifier = Modifier.height(MAIN_PADDING.dp))
 
-        if(articles.isEmpty()) {
+        if (articles.isEmpty()) {
             Box(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = MAIN_PADDING.dp)
                     .height(animatedHeight)
-                    .clickable(interactionSource = interactionSource,
-                        indication = null) {
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
                         onBoxClicked()
                     }) {
 
@@ -140,7 +155,8 @@ fun HomeScreen(
                     )
                 }
 
-                Text(text = "Нет избранных статей",
+                Text(
+                    text = "Нет избранных статей",
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center),
@@ -148,7 +164,8 @@ fun HomeScreen(
                     color = colorResource(id = R.color.warn_text),
                     textAlign = TextAlign.Center,
                     fontFamily = monFamily,
-                    fontSize = Constants.MAIN_ADDITIONAL_TEXT.sp)
+                    fontSize = Constants.MAIN_ADDITIONAL_TEXT.sp
+                )
             }
         } else {
             LazyColumn(
@@ -184,9 +201,18 @@ fun HomeScreen(
         Column(Modifier.padding(horizontal = MAIN_PADDING.dp)) {
 
             Spacer(modifier = Modifier.height(MAIN_PADDING.dp))
-            MemoView(headerText = R.string.title_algorithm_help, contextText = R.string.algorithm_help)
-            MemoView(headerText = R.string.title_conscious_victim, contextText = R.string.conscious_victim)
-            MemoView(headerText = R.string.title_unconscious_victim, contextText = R.string.unconscious_victim)
+            MemoView(
+                headerText = R.string.title_algorithm_help,
+                contextText = R.string.algorithm_help
+            )
+            MemoView(
+                headerText = R.string.title_conscious_victim,
+                contextText = R.string.conscious_victim
+            )
+            MemoView(
+                headerText = R.string.title_unconscious_victim,
+                contextText = R.string.unconscious_victim
+            )
         }
     }
 }

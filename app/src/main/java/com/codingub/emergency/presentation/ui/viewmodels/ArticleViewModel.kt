@@ -1,8 +1,10 @@
 package com.codingub.emergency.presentation.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codingub.emergency.core.ResultState
+import com.codingub.emergency.data.remote.datasource.VolleyDataSource
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.use_cases.GetArticles
 import com.codingub.emergency.domain.use_cases.SearchArticles
