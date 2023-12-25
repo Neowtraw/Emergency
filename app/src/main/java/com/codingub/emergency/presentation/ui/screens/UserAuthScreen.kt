@@ -57,10 +57,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserAuthScreen(
-    onAuthFinished : () -> Unit,
-    activity: Activity,
-    viewModel: AuthViewModel = hiltViewModel()
+    onAuthFinished: () -> Unit,
+    activity: Activity
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
+
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.call))

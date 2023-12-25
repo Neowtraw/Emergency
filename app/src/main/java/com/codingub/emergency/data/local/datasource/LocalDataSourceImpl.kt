@@ -1,5 +1,6 @@
 package com.codingub.emergency.data.local.datasource
 
+import android.util.Log
 import androidx.room.withTransaction
 import com.codingub.emergency.data.local.room.RoomDao
 import com.codingub.emergency.data.local.room.RoomDatabase
@@ -32,13 +33,24 @@ class LocalDataSourceImpl @Inject constructor(
         return database.withTransaction {
             dao.deleteAllArticles()
             dao.insertArticles(articles.map {
-                it.toArticleEntity()
+                it.toArticleRef()
+            })
+            dao.insertContent(articles.flatMap {
+                it.content.map { contentItem ->
+                    contentItem.toContentEntity()
+                }
             })
         }
     }
 
     override fun getAllArticles(): Flow<List<Article>> {
         return dao.getArticles().map {
+            it.map { article -> article.toArticle() }
+        }
+    }
+
+    override fun searchArticles(alt: String): Flow<List<Article>> {
+        return dao.searchArticles(alt).map {
             it.map { article -> article.toArticle() }
         }
     }
@@ -60,4 +72,10 @@ class LocalDataSourceImpl @Inject constructor(
     override fun getSavedServices(): Flow<List<Service>> {
         return dao.getSavedServices()
     }
+}
+
+fun String.checkWordInString(alt: String): Boolean {
+    val words = this.split("\\s+".toRegex())
+    Log.d("words", words.toString())
+    return alt in words
 }

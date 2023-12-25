@@ -26,7 +26,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,9 +45,10 @@ import com.codingub.emergency.presentation.ui.viewmodels.WelcomeViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WelcomeScreen(
-    onFinishButtonClicked: () -> Unit,
-    welcomeViewModel: WelcomeViewModel = hiltViewModel()
+    onFinishButtonClicked: () -> Unit
 ) {
+
+    val welcomeViewModel: WelcomeViewModel = hiltViewModel()
 
     val pages = listOf(
         OnBoardingPage.FirstPage,

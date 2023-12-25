@@ -1,31 +1,30 @@
 package com.codingub.emergency.data.local.models
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.Embedded
+import androidx.room.Relation
 import com.codingub.emergency.domain.models.Article
 
-@Entity(tableName = "Article")
 data class ArticleEntity(
-    @PrimaryKey val id: String,
-    val title: String,
-    val summary: String,
-    val description: String,
-    val imageUrl: String,
-    val videoUrl: String?,
-    val phone: String?,
-    val liked: Boolean
+    @Embedded val article: ArticleRef,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "articleId",
+        entity = ContentEntity::class
+    ) val content: List<ContentEntity>
 ) {
 
-    fun toArticle() : Article {
+    fun toArticle(): Article {
         return Article(
-            id = id,
-            title = title,
-            summary = summary,
-            description = description,
-            imageUrl = imageUrl,
-            videoUrl = videoUrl,
-            phone = phone,
-            liked = liked
+            id = article.id,
+            title = article.title,
+            summary = article.summary,
+            content = content.map {
+                it.toContent()
+            },
+            imageUrl = article.imageUrl,
+            videoUrl = article.videoUrl,
+            phone = article.phone,
+            liked = article.liked
         )
     }
 }

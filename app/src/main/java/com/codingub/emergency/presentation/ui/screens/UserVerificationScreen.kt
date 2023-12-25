@@ -33,9 +33,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserVerificationScreen(
-    onVerificationFinished: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    onVerificationFinished: () -> Unit
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
+
+
     var otp by rememberSaveable { mutableStateOf(("")) }
     val scope = rememberCoroutineScope()
 
@@ -57,31 +59,34 @@ fun UserVerificationScreen(
             AddAuthText(text = R.string.verification_code_request)
             Spacer(modifier = Modifier.height(50.dp))
 
-            OtpView(modifier =  Modifier
-
-                ,otpText = otp) {
+            OtpView(
+                modifier = Modifier, otpText = otp
+            ) {
                 otp = it
             }
-            FinishButton(modifier = Modifier.fillMaxWidth()
+            FinishButton(modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 50.dp),
                 text = R.string.finish,
                 visible = { otp.count() == 6 },
                 onClick = {
                     scope.launch(Dispatchers.Main) {
                         viewModel.signInWithCredential(otp).collect {
-                            when(it){
-                                is ResultState.Success->{
+                            when (it) {
+                                is ResultState.Success -> {
                                     //isDialog = false
                                     Log.d("user", "successful")
                                     onVerificationFinished()
                                 }
-                                is ResultState.Error ->{
-                                  //  isDialog = false
+
+                                is ResultState.Error -> {
+                                    //  isDialog = false
                                     Log.d("user", "error")
 
                                 }
-                                is ResultState.Loading ->{
-                                   // isDialog = true
+
+                                is ResultState.Loading -> {
+                                    // isDialog = true
                                     Log.d("user", "loading")
                                 }
                             }

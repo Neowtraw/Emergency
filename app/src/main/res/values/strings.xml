@@ -70,5 +70,12 @@
 
     <!-- MEMO END -->
 
+    <!-- EXCEPTIONS START -->
+    <string name="exception_network_lost">Нет подключения к интернету :(</string>
+    <string name="exception_unknown_error">Повторите попытку позже</string>
+    <string name="exception_no_results">Ничего не найдено</string>
+
+    <!-- EXCEPTIONS END -->
+
 
 </resources>

@@ -2,12 +2,14 @@ package com.codingub.emergency.data.local.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.codingub.emergency.data.local.models.ArticleEntity
+import com.codingub.emergency.data.local.models.ArticleRef
+import com.codingub.emergency.data.local.models.ContentEntity
 import com.codingub.emergency.data.local.models.ServiceEntity
 
 @Database(
-    entities = [ArticleEntity::class, ServiceEntity::class],
-    version = 3
+    entities = [ArticleRef::class, ServiceEntity::class, ContentEntity::class],
+    version = 5,
+    exportSchema = false
 )
 abstract class RoomDatabase : RoomDatabase() {
 

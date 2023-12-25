@@ -4,29 +4,42 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.codingub.emergency.data.local.models.ArticleEntity
+import com.codingub.emergency.data.local.models.ArticleRef
+import com.codingub.emergency.data.local.models.ContentEntity
 import com.codingub.emergency.data.local.models.ServiceEntity
 import com.codingub.emergency.domain.models.Service
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface RoomDao  {
+interface RoomDao {
 
     /*
         Article
      */
 
+    @Transaction
     @Query("SELECT * FROM Article")
-    fun getArticles() : Flow<List<ArticleEntity>>
+    fun getArticles(): Flow<List<ArticleEntity>>
 
+    @Transaction
     @Query("SELECT * FROM Article WHERE liked = 1")
-    fun getFavoriteArticles() : Flow<List<ArticleEntity>>
+    fun getFavoriteArticles(): Flow<List<ArticleEntity>>
 
+    @Transaction
+    @Query("SELECT * FROM Article WHERE alt LIKE '%' || :alt || '%'")
+    fun searchArticles(alt: String) : Flow<List<ArticleEntity>>
+
+    @Transaction
     @Query("SELECT * FROM Article WHERE id = :articleId")
-    fun getArticle(articleId: String) : Flow<ArticleEntity>
+    fun getArticle(articleId: String): Flow<ArticleEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertArticles(articles: List<ArticleEntity>)
+    suspend fun insertArticles(articles: List<ArticleRef>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertContent(content: List<ContentEntity>)
 
     @Query("DELETE FROM Article WHERE liked = 0")
     suspend fun deleteAllArticles()
@@ -43,8 +56,8 @@ interface RoomDao  {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertServices(services: List<ServiceEntity>)
 
-        @Query("SELECT * FROM Service")
-        fun getSavedServices() : Flow<List<Service>>
+    @Query("SELECT * FROM Service")
+    fun getSavedServices(): Flow<List<Service>>
 
     @Query("DELETE FROM Service")
     fun deleteSavedServices()

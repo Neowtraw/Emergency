@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,7 +39,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -69,9 +67,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun HomeScreen(
     onArticleClicked: (String) -> Unit,
     onBoxClicked: () -> Unit,
-    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val notificationPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     Column(
         Modifier
@@ -92,12 +89,14 @@ fun HomeScreen(
             label = "",
             animationSpec = tween(durationMillis = 500)
         )
+        val notificationPermissionState =
+            rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
 
-        DisposableEffect(LocalContext.current) {
+
+        DisposableEffect(notificationPermissionState) {
             if (notificationPermissionState.status.isGranted) {
                 homeViewModel.initializeWorkManager()
-            }
-            else {
+            } else {
                 notificationPermissionState.launchPermissionRequest()
             }
             onDispose {}

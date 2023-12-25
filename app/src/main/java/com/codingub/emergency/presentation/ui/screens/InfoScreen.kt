@@ -1,12 +1,15 @@
 package com.codingub.emergency.presentation.ui.screens
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Looper
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,7 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,18 +49,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingub.emergency.R
-import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.models.Service
 import com.codingub.emergency.presentation.ui.customs.ActionBar
 import com.codingub.emergency.presentation.ui.customs.CountryDropDownMenu
+import com.codingub.emergency.presentation.ui.customs.ErrorStateView
 import com.codingub.emergency.presentation.ui.customs.HeaderText
 import com.codingub.emergency.presentation.ui.customs.InfoContentText
 import com.codingub.emergency.presentation.ui.customs.InfoHeaderText
@@ -71,76 +76,62 @@ import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CONTENT_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
-import com.codingub.emergency.presentation.ui.utils.ScreenState
+import com.codingub.emergency.presentation.ui.utils.shimmerEffect
 import com.codingub.emergency.presentation.ui.viewmodels.InfoViewModel
+import com.codingub.emergency.presentation.ui.viewmodels.ServiceState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.timerTask
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun InfoScreen(
-    infoViewModel: InfoViewModel = hiltViewModel()
-) {
+fun InfoScreen() {
 
+    val infoViewModel: InfoViewModel = hiltViewModel()
     val country by infoViewModel.country.collectAsState()
-    var screenState by remember {
-        mutableStateOf<ScreenState<List<Service>>>(ScreenState.Loading)
-    }
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
     val fineLocationPermissionState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
         ),
     )
+    val callPermissionState = rememberPermissionState(
+        permission =
+        Manifest.permission.CALL_PHONE
+    )
 
-    var rationaleState by remember {
-        mutableStateOf<RationaleState?>(null)
-    }
-
-    LaunchedEffect(key1 = context) {
-
-        infoViewModel.services.flowWithLifecycle(
-            lifecycleOwner.lifecycle,
-            Lifecycle.State.STARTED
-        ).collectLatest { result ->
-
-            screenState = when (result) {
-                is ResultState.Success -> ScreenState.Success(data = result.data!!)
-                is ResultState.Error -> ScreenState.Error(error = result.error!!)
-                is ResultState.Loading -> ScreenState.Loading
-            }
+    SideEffect {
+        if (!callPermissionState.status.isGranted) {
+            callPermissionState.launchPermissionRequest()
         }
     }
 
+    val serviceState by infoViewModel.serviceState.collectAsStateWithLifecycle()
+
     Column(Modifier.verticalScroll(rememberScrollState())) {
-
-
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .fillMaxSize()
-            .background(getBackgroundBrush())
-            .padding(top = 40.dp, bottom = 70.dp)
-    ) {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .fillMaxSize()
+                .background(getBackgroundBrush())
+                .padding(top = 40.dp, bottom = 70.dp)
+        ) {
 
             ActionBar(text = R.string.emergency_service)
 
-
             Column(Modifier.padding(horizontal = MAIN_PADDING.dp)) {
-
-                rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
-
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
                 CountryDropDownMenu(
@@ -155,53 +146,33 @@ fun InfoScreen(
                 }
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
-                when (screenState) {
-                    is ScreenState.Loading -> {}
-                    is ScreenState.Success -> {
-                        PhoneList(infoViewModel.services.collectAsState().value.data!!) {}
-                        //     PhoneGrid(infoViewModel.services.collectAsState().value.data!!) {}
-                    }
-
-                    is ScreenState.Error -> {}
-                }
+                ServiceContent(states = serviceState)
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
                 HeaderText(
                     text = R.string.title_your_data, color = R.color.contrast
                 )
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-                InfoHeaderText(text = stringResource(id = R.string.title_current_address))
 
-                PermissionRequestButton(
-                    isGranted = fineLocationPermissionState.allPermissionsGranted,
-                    title = "Precise location access",
-                    onClick = {
-                        if (fineLocationPermissionState.shouldShowRationale) {
-                            rationaleState = RationaleState(
-                                "Request Precise Location",
-                                "In order to use this feature please grant access by accepting " +
-                                        "the location permission dialog." + "\n\nWould you like to continue?",
-                            ) { proceed ->
-                                if (proceed) {
-                                    fineLocationPermissionState.launchMultiplePermissionRequest()
-                                }
-                                rationaleState = null
-                            }
-                        } else {
-                            fineLocationPermissionState.launchMultiplePermissionRequest()
-                        }
-                    },
-                    onGranted = {
-                        LocationUpdatesContent(true)
-                    }
-                )
+                // User Location
+                InfoHeaderText(text = stringResource(id = R.string.title_current_address))
+                LocationPermission(fineLocationPermissionState = fineLocationPermissionState)
+
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+                // Home Location
                 InfoHeaderText(text = stringResource(id = R.string.title_home_address))
                 InfoContentText(text = infoViewModel.getUser().address)
 
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+                // Parent Phone
                 if (infoViewModel.getUser().parentNumber != null) {
                     InfoHeaderText(text = stringResource(id = R.string.title_parent_phone))
-                    InfoContentText(text = infoViewModel.getUser().parentNumber!!)
+                    PhoneItem(
+                        title = infoViewModel.getUser().phone,
+                        phone = infoViewModel.getUser().phone,
+                        callPermissionState = callPermissionState
+                    )
                 }
                 Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
                 MemoView(R.string.title_service_algorithm, R.string.service_algorithm)
@@ -210,6 +181,123 @@ fun InfoScreen(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+private fun callPermission(
+    context: Context,
+    callPermissionsState: PermissionState,
+    phone: String,
+    onProceed: () -> Unit
+) {
+
+    if (callPermissionsState.status.isGranted) {
+        callPhone(phone, context)
+    } else {
+        if (callPermissionsState.status.shouldShowRationale) {
+            onProceed()
+        } else {
+            callPermissionsState.launchPermissionRequest()
+        }
+    }
+}
+
+private fun callPhone(phone: String, context: Context) {
+    val intent = Intent(Intent.ACTION_CALL)
+    intent.data = Uri.parse("tel:$phone")
+
+    try {
+        context.startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        e.printStackTrace()
+    }
+}
+
+@Composable
+private fun ServiceContent(
+    states: ServiceState
+) {
+
+
+    AnimatedContent(targetState = states, label = "") { state ->
+
+        Column {
+            when (state) {
+                is ServiceState.Loading -> {
+                    ServiceLoadingStateView()
+                }
+
+                is ServiceState.Result -> {
+                    PhoneList(state.services)
+                }
+
+                is ServiceState.Error -> {
+                    ErrorStateView(message = state.message)
+                }
+
+                is ServiceState.NetworkLost -> {
+                    ErrorStateView(icon = R.drawable.ic_network_lost,
+                       message = R.string.exception_network_lost)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ServiceLoadingStateView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+
+        (0..4).forEach {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp)
+                    .height(50.dp)
+                    .width(50.dp)
+                    .shimmerEffect()
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun LocationPermission(
+    fineLocationPermissionState: MultiplePermissionsState
+) {
+    var rationaleState by remember {
+        mutableStateOf<RationaleState?>(null)
+    }
+
+    rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
+
+    PermissionRequestButton(
+        isGranted = fineLocationPermissionState.allPermissionsGranted,
+        title = "Precise location access",
+        onClick = {
+            if (fineLocationPermissionState.shouldShowRationale) {
+                rationaleState = RationaleState(
+                    "Request Precise Location",
+                    "In order to use this feature please grant access by accepting " +
+                            "the location permission dialog." + "\n\nWould you like to continue?",
+                ) { proceed ->
+                    if (proceed) {
+                        fineLocationPermissionState.launchMultiplePermissionRequest()
+                    }
+                    rationaleState = null
+                }
+            } else {
+                fineLocationPermissionState.launchMultiplePermissionRequest()
+            }
+        },
+        onGranted = {
+            LocationUpdatesContent(true)
+        }
+    )
+}
 
 @Composable
 @SuppressWarnings("MissingPermission")
@@ -259,7 +347,6 @@ fun LocationUpdatesContent(usePreciseLocation: Boolean) {
 
 }
 
-
 @RequiresPermission(
     anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
 )
@@ -302,29 +389,46 @@ fun LocationUpdatesEffect(
 }
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PhoneList(phones: List<Service>, onPhoneClicked: () -> Unit) {
+fun PhoneList(phones: List<Service>) {
+
+    val callPermissionState = rememberPermissionState(
+        permission =
+        Manifest.permission.CALL_PHONE
+    )
+
     Column {
         (1 until phones.size).forEach {
             PhoneItem(
                 title = phones[it].name,
                 phone = phones[it].phone,
-                onIconClicked = { onPhoneClicked() }
+                callPermissionState = callPermissionState
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 private fun PhoneItem(
+    callPermissionState: PermissionState,
     title: String,
-    phone: String,
-    onIconClicked: () -> Unit
+    phone: String
 ) {
+    val context = LocalContext.current
+    var rationaleState by remember {
+        mutableStateOf<RationaleState?>(null)
+    }
+
+    rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
+
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -360,7 +464,19 @@ private fun PhoneItem(
                 contentColor = colorResource(id = R.color.call),
                 containerColor = colorResource(id = R.color.call)
             ),
-            onClick = { onIconClicked() }
+            onClick = {
+                callPermission(context, callPermissionState, phone) {
+                    rationaleState = RationaleState(
+                        "Запросить разрешение на звонки",
+                        "Это позволит вам звонить в экстренные службы прямо с приложения",
+                    ) { proceed ->
+                        if (proceed) {
+                            callPermissionState.launchPermissionRequest()
+                        }
+                        rationaleState = null
+                    }
+                }
+            }
         ) {
 
             Box(
@@ -378,19 +494,6 @@ private fun PhoneItem(
     }
 }
 
-//@Composable
-//private fun PhoneGrid(phones: List<Service>, onPhoneClicked: () -> Unit) {
-//
-//    LazyColumn(
-//        contentPadding = PaddingValues(vertical = MAIN_PADDING.dp),
-//        verticalArrangement = Arrangement.spacedBy(MAIN_DIVIDER_ITEMS.dp)
-//    ) {
-//        phoneList(phones, onPhoneClicked)
-//        item {
-//            PhoneList(phones = phones, onPhoneClicked)
-//        }
-//    }
-//}
 
 //fun LazyListScope.phoneList(phones: List<Service>, onPhoneClicked: () -> Unit) {
 //    items(phones) { phone ->

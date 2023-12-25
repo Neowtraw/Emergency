@@ -1,7 +1,6 @@
 package com.codingub.emergency.presentation.ui.screens
 
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,18 +56,13 @@ import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_HEADER_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
 import com.codingub.emergency.presentation.ui.viewmodels.ArticleInfoViewModel
-import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.launch
 
 @Composable
 fun ArticleInfoScreen(
     id: String,
-    onBackClicked: () -> Unit,
-    articleInfoViewModel: ArticleInfoViewModel = hiltViewModel()
+    onBackClicked: () -> Unit
 ) {
-
-    // val videoItem by articleInfoViewModel.videoItem.collectAsState()
-    // article.videoUrl?.let(articleInfoViewModel::setVideoUri)
+    val articleInfoViewModel: ArticleInfoViewModel = hiltViewModel()
 
     articleInfoViewModel.getSavedArticle(id)
     val article by articleInfoViewModel.article.collectAsState()
@@ -176,14 +169,43 @@ fun ArticleInfoScreen(
                 color = colorResource(id = R.color.add_text)
             )
             Spacer(modifier = Modifier.height(60.dp))
-            Text(
-                text = article.description.replace("\\n", "\n").replace("\\t", "\t"),
-                fontSize = MAIN_CONTENT_TEXT.sp,
-                fontFamily = monFamily,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Start,
-                color = colorResource(id = R.color.main_text)
-            )
+            article.content.forEach { content ->
+                if (!content.title.isNullOrEmpty()) {
+                    Text(
+                        text = content.title,
+                        fontSize = MAIN_CONTENT_TEXT.sp,
+                        fontFamily = monFamily,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Start,
+                        color = colorResource(id = R.color.main_text)
+                    )
+                }
+                Text(
+                    text = content.description,
+                    fontSize = MAIN_CONTENT_TEXT.sp,
+                    fontFamily = monFamily,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Start,
+                    color = colorResource(id = R.color.main_text)
+                )
+                if (content.imageUrl.isNullOrEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .background(brush = getImageBrush())
+                    ) {
+                        AsyncImage(
+                            model = content.description,
+                            contentDescription = "Article View",
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentScale = ContentScale.FillHeight,
+                            error = painterResource(R.drawable.placeholder)
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
             AndroidView(
                 factory = { context ->

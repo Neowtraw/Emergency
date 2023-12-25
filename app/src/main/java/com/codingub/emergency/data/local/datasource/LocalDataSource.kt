@@ -14,8 +14,8 @@ interface LocalDataSource {
 
     fun getFavoriteArticles() : Flow<List<Article>>
     fun getAllArticles() : Flow<List<Article>>
-
     fun getArticle(id: String) : Flow<Article>
+    fun searchArticles(alt: String) : Flow<List<Article>>
 
     /*
         Services

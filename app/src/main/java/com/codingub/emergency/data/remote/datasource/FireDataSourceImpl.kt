@@ -1,59 +1,107 @@
 package com.codingub.emergency.data.remote.datasource
 
-import android.util.Log
+import com.codingub.emergency.core.Resource
+import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.data.remote.models.ArticleResponse
+import com.codingub.emergency.data.remote.models.ContentResponse
 import com.codingub.emergency.data.remote.models.ServiceResponse
 import com.codingub.emergency.data.utils.Constants.ARTICLE_COLLECTION
 import com.codingub.emergency.data.utils.Constants.SERVICE_COLLECTION
+import com.codingub.emergency.data.utils.NetworkLostException
+import com.codingub.emergency.data.utils.NoResultsException
+import com.codingub.emergency.data.utils.network.ConnectivityObserver
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.models.Service
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+
 class FireDataSourceImpl @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val resources: Resource
 ) : FireDataSource {
 
 
-    override suspend fun getArticles(): List<Article> {
-        return db.collection(ARTICLE_COLLECTION).get().await().map { document ->
-            ArticleResponse(
-                id = document.id,
-                item = document.toObject(ArticleResponse.ArticleItem::class.java)
-            ).toArticle()
-        }
-    }
+    override fun getArticles(): Flow<ResultState<List<Article>>> = callbackFlow {
+        db.collection(ARTICLE_COLLECTION)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val articles = mutableListOf<Article>()
+                // wrap documents
+                val articleTasks = snapshot.documents.map { document ->
 
-    override suspend fun searchArticles(alt: String): List<Article> {
-        val articles = mutableListOf<Article>()
-        db.collection(ARTICLE_COLLECTION).get().await().map { document ->
-            val docAlt = document.getString("alt")
-            docAlt?.let {
-                if (docAlt.checkWordInString(alt)) {
-                    articles.add(
-                        ArticleResponse(
-                            id = document.id,
-                            item = document.toObject(ArticleResponse.ArticleItem::class.java)
-                        ).toArticle()
-                    )
+                    //get content
+                    val contentRefs = document["content"] as? List<DocumentReference> ?: emptyList()
+                    val content = mutableListOf<ContentResponse>()
+                    val contentTasks = contentRefs.map { contentRef ->
+                        contentRef.get()
+                            .addOnSuccessListener { contentDocument ->
+                               content.add(contentDocument.toContentResponse())
+                            }
+                            .addOnFailureListener { error ->
+                                trySend(ResultState.Error(error))
+                            }
+                    }
+                    //await while all content received and get article
+                    Tasks.whenAll(contentTasks)
+                        .addOnSuccessListener {
+                           articles.add(ArticleResponse(
+                                id = document.id,
+                                item = document.toObject(ArticleResponse.ArticleItem::class.java)
+                                    ?: throw NoResultsException(resources),
+                                content = content
+                            ).toArticle()
+                           )
+                        }
+                        .addOnFailureListener { error ->
+                            trySend(ResultState.Error(error))
+                        }
                 }
+                // when all articles are prepared, send
+                Tasks.whenAll(articleTasks)
+                    .addOnSuccessListener {
+                        trySend(ResultState.Success(articles))
+                        close()
+                    }
+                    .addOnFailureListener { error ->
+                        trySend(ResultState.Error(error))
+                    }
             }
-        }
-        return articles
+            .addOnFailureListener { error ->
+                trySend(ResultState.Error(NetworkLostException(resources)))
+            }
+
+        awaitClose { close() }
     }
 
-    override suspend fun getServicesFromLanguage(language: String): List<Service> {
-        return db.collection(SERVICE_COLLECTION)
+
+    override fun getServicesFromLanguage(language: String): Flow<ResultState<List<Service>>> = callbackFlow {
+        db.collection(SERVICE_COLLECTION)
             .whereEqualTo("language", language)
             .get()
-            .await()
-            .map { document ->
-                ServiceResponse(
-                    id = document.id,
-                    item = document.toObject(ServiceResponse.ServiceItem::class.java)
-                ).toService()
+            .addOnSuccessListener { snapshot ->
+                val services = snapshot.documents.map { document ->
+                    ServiceResponse(
+                        id = document.id,
+                        item = document.toObject(ServiceResponse.ServiceItem::class.java)
+                            ?: throw NoResultsException(resources)
+                    ).toService()
+                }
+                trySend(ResultState.Success(services))
+                close()
             }
+            .addOnFailureListener {
+                trySend(ResultState.Error(NetworkLostException(resources)))
+            }
+
+        awaitClose { close() }
     }
 }
 
@@ -61,8 +109,12 @@ class FireDataSourceImpl @Inject constructor(
     Additional
  */
 
-fun String.checkWordInString(alt: String): Boolean {
-    val words = this.split("\\s+".toRegex())
-    Log.d("words", words.toString())
-    return alt in words
+fun DocumentSnapshot.toContentResponse(): ContentResponse {
+
+    return ContentResponse(
+        id = this.id,
+        item = this.toObject(ContentResponse.ContentItem::class.java)
+            ?: ContentResponse.ContentItem()
+    )
 }
+

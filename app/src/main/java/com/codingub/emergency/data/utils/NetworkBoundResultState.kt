@@ -1,5 +1,6 @@
 package com.codingub.emergency.data.utils
 
+import android.util.Log
 import com.codingub.emergency.core.ResultState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -23,13 +24,13 @@ inline fun <ResultType, RequestType> NetworkBoundResultState(
 
     val flow = when {
         shouldFetch(data) -> {
-            emit(ResultState.Loading(data))
 
             try {
                 saveFetchResult(fetch())
                 query().map { ResultState.Success(it) }
             } catch (throwable: Throwable) {
                 onFetchFailed(throwable)
+                Log.d("", "oно сработало")
                 query().map { ResultState.Error(throwable, it) }
             }
         }

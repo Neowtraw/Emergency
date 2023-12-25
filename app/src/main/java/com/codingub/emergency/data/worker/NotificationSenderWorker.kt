@@ -9,6 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.work.HiltWorker
+import androidx.lifecycle.asLiveData
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -37,12 +38,12 @@ class NotificationSenderWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return try {
-            val lastNewsLink = volleyDataSource.getTheLastNewsLink().also {
-                displayNotification(volleyDataSource.getTheLastNews(href = it))
+            volleyDataSource.getTheLastNewsLink().also {
+                if (datastore.readLastNewsLink().asLiveData().value != it) {
+                    displayNotification(volleyDataSource.getTheLastNews(href = it))
+
+                }
             }
-            //   if (datastore.readLastNewsLink().first() != lastNewsLink) {
-            //     }
-            Log.d("test-link", lastNewsLink)
             Result.success(workDataOf(NOTIFICATION_SEND_KEY to true))
         } catch (e: Exception) {
             Log.d("test-link", "$e")
@@ -53,7 +54,7 @@ class NotificationSenderWorker @AssistedInject constructor(
     @SuppressWarnings("MissingPermission")
     private fun displayNotification(news: News) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.link))
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
 
         val imageLoader = ImageLoader(context)

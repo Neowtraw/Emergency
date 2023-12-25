@@ -13,7 +13,7 @@ interface AppRepository {
     fun getArticles() : Flow<ResultState<List<Article>>>
     fun getArticle(id: String) : Flow<Article>
     fun getFavoriteArticles() : Flow<List<Article>>
-    fun searchArticles(alt: String) : Flow<ResultState<List<Article>>>
+    fun searchArticles(alt: String) : Flow<List<Article>>
 
     /*
         Services

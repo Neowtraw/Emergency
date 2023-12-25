@@ -6,6 +6,8 @@ import com.codingub.emergency.data.remote.datasource.FireDataSource
 import com.codingub.emergency.data.remote.datasource.FireDataSourceImpl
 import com.codingub.emergency.data.repos.AppRepositoryImpl
 import com.codingub.emergency.data.repos.AuthRepositoryImpl
+import com.codingub.emergency.data.utils.network.ConnectivityObserver
+import com.codingub.emergency.data.utils.network.NetworkManager
 import com.codingub.emergency.domain.repos.AppRepository
 import com.codingub.emergency.domain.repos.AuthRepository
 import dagger.Binds
@@ -19,6 +21,9 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindLocalDataSource(localDataSource: LocalDataSourceImpl): LocalDataSource
+
+    @Binds
+    abstract fun bindNetworkManager(network: NetworkManager): ConnectivityObserver
 
     @Binds
     abstract fun bindRemoteDataSource(remoteDataSource: FireDataSourceImpl): FireDataSource

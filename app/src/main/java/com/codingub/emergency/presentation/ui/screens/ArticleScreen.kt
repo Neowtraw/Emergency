@@ -1,5 +1,7 @@
 package com.codingub.emergency.presentation.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
@@ -8,6 +10,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,11 +43,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +56,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -61,46 +63,39 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codingub.emergency.R
 import com.codingub.emergency.core.ArticleType
-import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.presentation.ui.customs.ArticleItem
+import com.codingub.emergency.presentation.ui.customs.EmptyStateView
+import com.codingub.emergency.presentation.ui.customs.ErrorStateView
 import com.codingub.emergency.presentation.ui.customs.getBackgroundBrush
 import com.codingub.emergency.presentation.ui.theme.monFamily
+import com.codingub.emergency.presentation.ui.utils.Constants
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_ADDITIONAL_TEXT
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_CORNER
+import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_DIVIDER
 import com.codingub.emergency.presentation.ui.utils.Constants.MAIN_PADDING
-import com.codingub.emergency.presentation.ui.utils.ScreenState
+import com.codingub.emergency.presentation.ui.utils.shimmerEffect
 import com.codingub.emergency.presentation.ui.viewmodels.ArticleViewModel
-import kotlinx.coroutines.flow.collectLatest
+import com.codingub.emergency.presentation.ui.viewmodels.ArticlesState
 
 
 @Composable
 fun ArticleScreen(
     onArticleClicked: (String) -> Unit,
-    articleViewModel: ArticleViewModel = hiltViewModel()
 ) {
+    val articleViewModel: ArticleViewModel = hiltViewModel()
 
-    val context = LocalContext.current
+
     var textValue: String by remember { mutableStateOf("") }
-    var screenState by remember { mutableStateOf<ScreenState<List<Article>>>(ScreenState.Loading) }
-
-
-    LaunchedEffect(articleViewModel, context) {
-        articleViewModel.articles.collectLatest { result ->
-            when (result) {
-                is ResultState.Loading -> screenState = ScreenState.Loading
-                is ResultState.Success -> screenState = ScreenState.Success(data = result.data!!)
-                is ResultState.Error -> screenState =
-                    ScreenState.Error(error = result.error ?: Throwable())
-            }
-        }
-    }
+    val articlesScreenState by articleViewModel.articlesState.collectAsStateWithLifecycle()
 
     Column(
         Modifier
@@ -111,73 +106,163 @@ fun ArticleScreen(
             .padding(horizontal = MAIN_PADDING.dp)
     ) {
 
-        Search(textValue = textValue,
-            onTextChange = { text ->
-                textValue = text
-                articleViewModel.searchArticlesByAlt(alt = text)
-            }, onIconClicked = {})
- //       Spacer(modifier = Modifier.height(20.dp))
+        Search(textValue = textValue, onTextChange = { text ->
+            textValue = text
+            articleViewModel.searchArticlesByAlt(alt = text)
+        }, onIconClicked = {})
 
-        when (screenState) {
-            ScreenState.Loading -> {}
-            is ScreenState.Success -> {
-                ArticleGrid(
-                    articles = articleViewModel.articles.collectAsState().value.data!!,
-                    onLikeClick = { id, liked ->
-                        articleViewModel.updateArticleToFavorite(id, liked)
-                    },
-                    onCardClick = {
-                        onArticleClicked(it.id)
-                    },
-                    onTabSelected = {
-                        articleViewModel.searchArticlesByAlt(alt = it)
-                    })
+        ArticlesContent(states = articlesScreenState,
+            onLikeClick = { id, liked ->
+                articleViewModel.updateArticleToFavorite(id, liked)
+            }, onCardClick = {
+                onArticleClicked(it.id)
+            }, onTabSelected = {
+                articleViewModel.searchArticlesByAlt(alt = it)
+            })
+    }
+}
+
+@Composable
+private fun ArticlesContent(
+    states: ArticlesState,
+    onLikeClick: (id: String, liked: Boolean) -> Unit,
+    onCardClick: (Article) -> Unit,
+    onTabSelected: (String) -> Unit
+) {
+
+    var isTabsVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    AnimatedVisibility(visible = isTabsVisible) {
+        TabbedItem {
+            onTabSelected(it)
+        }
+    }
+
+    AnimatedContent(
+        targetState = states, label = ""
+    ) { state ->
+
+        Column {
+            when (state) {
+                is ArticlesState.Loading -> {
+                    isTabsVisible = false
+                    ArticlesLoadingStateView()
+                }
+
+                is ArticlesState.Success -> {
+                    isTabsVisible = true
+
+                    ArticleGrid(
+                        modifier = Modifier.weight(1f),
+                        articles = state.articles,
+                        onLikeClick = onLikeClick,
+                        onCardClick = onCardClick
+                    )
+                }
+
+                is ArticlesState.NotFound -> {
+                    isTabsVisible = true
+                    EmptyStateView(state.error)
+                }
+
+                is ArticlesState.Error -> {
+                    isTabsVisible = true
+                    ErrorStateView(message = state.error)
+
+                }
+
+                is ArticlesState.NetworkLost -> {
+                    isTabsVisible = false
+                    ErrorStateView(icon = R.drawable.ic_network_lost,
+                        message = R.string.exception_network_lost)
+
+                }
             }
 
-            is ScreenState.Error -> {}
         }
     }
 }
 
+@Composable
+private fun ArticlesLoadingStateView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
 
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp)
+                    .height(50.dp)
+                    .width(100.dp)
+                    .shimmerEffect()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            (0..3).forEach {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(280.dp)
+                        .padding(vertical = 5.dp)
+                        .shimmerEffect()
+                )
+            }
+        }
+
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ArticleGrid(
     articles: List<Article>,
     onLikeClick: (id: String, liked: Boolean) -> Unit,
     onCardClick: (Article) -> Unit,
-    onTabSelected: (String) -> Unit
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(
-            top = MAIN_PADDING.dp,
-            bottom = 80.dp
-        )
+            top = MAIN_PADDING.dp, bottom = 80.dp
+        ),
+        modifier = modifier
     ) {
-        item {
-            TabbedItem {
-                onTabSelected(it)
-            }
-        }
         items(articles) { article ->
-            ArticleItem(
-                image = article.imageUrl,
-                title = article.title,
-                summary = article.summary,
-                onCardClick = { onCardClick(article) },
-                liked = article.liked,
-                onLikeClick = { onLikeClick(article.id, article.liked) })
+            Row(
+                Modifier.animateItemPlacement(
+                    tween(durationMillis = 500)
+                )
+            ) {
+                ArticleItem(image = article.imageUrl,
+                    title = article.title,
+                    summary = article.summary,
+                    onCardClick = { onCardClick(article) },
+                    liked = article.liked,
+                    onLikeClick = { onLikeClick(article.id, article.liked) })
+            }
         }
 
     }
 
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Search(
-    textValue: String,
-    onTextChange: (String) -> Unit,
-    onIconClicked: () -> Unit
+    textValue: String, onTextChange: (String) -> Unit, onIconClicked: () -> Unit
 ) {
     Box(
         Modifier
@@ -187,15 +272,13 @@ private fun Search(
     ) {
 
         val stroke = Stroke(
-            width = 3f,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+            width = 3f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
         val interactionSource = remember { MutableInteractionSource() }
         val contrastColor = colorResource(id = R.color.contrast)
 
         Canvas(
-            Modifier
-                .matchParentSize()
+            Modifier.matchParentSize()
         ) {
             drawRoundRect(
                 color = contrastColor,
@@ -205,8 +288,7 @@ private fun Search(
         }
 
         Row(
-            Modifier
-                .matchParentSize(),
+            Modifier.matchParentSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
 
@@ -226,32 +308,27 @@ private fun Search(
                 maxLines = 1,
                 textStyle = TextStyle(color = colorResource(id = R.color.main_text)),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    autoCorrect = true
+                    keyboardType = KeyboardType.Text, autoCorrect = true
                 ),
                 visualTransformation = VisualTransformation.None,
                 shape = RoundedCornerShape(MAIN_CORNER.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent
+                    focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent
                 )
             )
 
-            Icon(
-                imageVector = if (textValue.isEmpty()) ImageVector.vectorResource(id = R.drawable.ic_search)
-                else ImageVector.vectorResource(id = R.drawable.ic_search),
+            Icon(imageVector = if (textValue.isEmpty()) ImageVector.vectorResource(id = R.drawable.ic_search)
+            else ImageVector.vectorResource(id = R.drawable.ic_search),
                 contentDescription = null,
                 tint = colorResource(id = R.color.contrast_icons),
                 modifier = Modifier
                     .padding(MAIN_PADDING.dp)
                     //.size(20.dp)
                     .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
+                        interactionSource = interactionSource, indication = null
                     ) {
                         onIconClicked()
-                    }
-            )
+                    })
         }
 
 
@@ -260,26 +337,21 @@ private fun Search(
 
 @Composable
 private fun TabbedItem(
-    modifier: Modifier = Modifier,
-    onTabSelected: (String) -> Unit
+    modifier: Modifier = Modifier, onTabSelected: (String) -> Unit
 ) {
     val tabTitles = ArticleType.values()
     var selectedTabIndex by remember { mutableStateOf<Int?>(null) }
 
-    Column(modifier = modifier) {
-        TabRow(
-            selectedTabIndex = selectedTabIndex ?: 0,
+    Column(modifier) {
+        TabRow(selectedTabIndex = selectedTabIndex ?: 0,
             backgroundColor = Color.Transparent,
             contentColor = colorResource(id = R.color.navbar_unselected),
-            indicator = {}
-        ) {
+            indicator = {}) {
             tabTitles.forEachIndexed { index, element ->
                 val bgColor: Color by animateColorAsState(
                     if (selectedTabIndex == index) colorResource(id = R.color.tabrow_selected) else colorResource(
                         id = R.color.tabrow_unselected
-                    ),
-                    label = "",
-                    animationSpec = tween(300, easing = LinearEasing)
+                    ), label = "", animationSpec = tween(300, easing = LinearEasing)
                 )
 
                 Tab(

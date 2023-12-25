@@ -56,7 +56,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -65,18 +65,18 @@ dependencies {
 
 
     // lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0-rc02")
 
     // browser
     implementation("androidx.browser:browser:1.7.0")
     
     // compose
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.compose.foundation:foundation:1.5.4")
 
     // firebase
     implementation("com.google.firebase:firebase-storage:20.3.0")
-    implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation("com.google.firebase:firebase-auth:22.3.0")
 
     // navigation bar
@@ -128,7 +128,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
 
-    implementation("androidx.compose.material:material-icons-extended:1.6.0-beta02")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-beta03")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
     // permissions
@@ -147,26 +147,40 @@ dependencies {
     implementation("com.android.volley:volley:1.2.1")
     implementation("org.jsoup:jsoup:1.15.3")
 
+    // serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+//    implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
 
     // test
-    testImplementation("androidx.test:core-ktx:1.5.0")
-    androidTestImplementation("androidx.test:runner:1.5.2")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")
+
     testImplementation("org.mockito:mockito-core:5.0.0")
     testImplementation("org.mockito:mockito-inline:5.0.0")
     testImplementation("org.mockito:mockito-android:5.0.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("app.cash.turbine:turbine:0.12.1")
-    testImplementation("androidx.work:work-testing:2.9.0")
-    testImplementation("org.robolectric:robolectric:4.9")
+
     testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
     kaptTest("com.google.dagger:hilt-android-compiler:2.48.1")
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48.1")
+
+    testImplementation("org.assertj:assertj-core:3.24.2")
+
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.4.2")
+
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    testImplementation("androidx.work:work-testing:2.9.0")
+
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation("app.cash.turbine:turbine:0.12.1")
+    testImplementation("org.robolectric:robolectric:4.9")
 }
 
 kapt {
