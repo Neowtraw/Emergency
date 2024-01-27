@@ -86,10 +86,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // hilt
-    implementation("com.google.dagger:hilt-android:2.48.1")
+    implementation("com.google.dagger:hilt-android:2.49")
     implementation("androidx.hilt:hilt-common:1.1.0")
     implementation("androidx.hilt:hilt-work:1.1.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.49")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("androidx.hilt:hilt-compiler:1.1.0")
 

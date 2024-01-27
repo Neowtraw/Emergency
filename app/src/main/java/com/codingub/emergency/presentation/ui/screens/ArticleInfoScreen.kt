@@ -231,6 +231,7 @@ fun ArticleInfoScreen(
                     .fillMaxWidth()
                     .aspectRatio(16 / 9f)
             )
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

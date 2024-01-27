@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.codingub.emergency.data.repos.DataStoreRepository
 import com.codingub.emergency.presentation.navigation.NavRoute.AUTH_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
-import com.codingub.emergency.presentation.navigation.NavRoute.USER_AUTH
 import com.codingub.emergency.presentation.navigation.NavRoute.WELCOME
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +31,10 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             repository.readOnBoardingState().collect { completed ->
                 if (completed) {
-                    if(auth.currentUser == null){
+                    if (auth.currentUser == null) {
                         _startDestination.value = AUTH_BOARDING
                     }
+
                 } else {
                     _startDestination.value = WELCOME
                 }

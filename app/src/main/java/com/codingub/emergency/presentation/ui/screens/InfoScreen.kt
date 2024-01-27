@@ -138,6 +138,7 @@ fun InfoScreen() {
                     code = country,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(colorResource(id = R.color.white))
                         .padding(horizontal = MAIN_PADDING.dp),
                     isLabelVisible = false,
                     value = country.name
