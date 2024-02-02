@@ -37,7 +37,8 @@ fun FinishButton(
             Button(
                 onClick = onClick,
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    containerColor = Color.Black
                 )
             ) {
                 Text(text = stringResource(id = text), fontFamily = monFamily)

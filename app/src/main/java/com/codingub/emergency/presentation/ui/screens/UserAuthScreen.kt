@@ -3,7 +3,9 @@ package com.codingub.emergency.presentation.ui.screens
 import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -67,72 +70,87 @@ fun UserAuthScreen(
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.call))
     var code by rememberSaveable { mutableStateOf(Country.Belarus) }
     var mask by rememberSaveable { mutableStateOf("${code.code} ${code.pattern}") }
+    var loading by rememberSaveable { mutableStateOf(false) }
 
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(getBackgroundBrush())
+                .padding(MAIN_PADDING.dp)
+                .clickable(enabled = !loading) {},
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
 
+            LottieAnimation(
+                modifier = Modifier.size(100.dp),
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+            )
 
+            HeaderText(text = R.string.your_phone_number)
+            Spacer(modifier = Modifier.height(MAIN_DIVIDER_ITEMS.dp))
+            AddAuthText(text = R.string.your_phone_number_add)
+            Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+            PhoneField(phoneNumber = phoneNumber, mask = mask) {
+                phoneNumber = it
+            }
+            Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+            CountryDropDownMenu(code = code) {
+                code = it
+                mask = "${code.code} ${code.pattern}"
+            }
+            Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(getBackgroundBrush())
-            .padding(MAIN_PADDING.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+            FinishButton(
+                modifier = Modifier.padding(top = 50.dp),
+                text = R.string.finish,
+                visible = {
+                    phoneNumber.count() >= 9
+                },
+                onClick = {
+                    scope.launch(Dispatchers.Main) {
+                        viewModel.createUserWithPhone(
+                            code.code,
+                            phoneNumber,
+                            activity
+                        ).collect {
+                            when (it) {
+                                is ResultState.Success -> {
+                                    loading = false
+                                    Log.d("user", it.data.toString())
+                                    onAuthFinished()
+                                }
 
-        LottieAnimation(
-            modifier = Modifier.size(100.dp),
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-        )
+                                is ResultState.Error -> {
+                                    loading = false
+                                    activity.showMsg(it.error.toString())
+                                    Log.d("userErr", it.error.toString())
 
-        HeaderText(text = R.string.your_phone_number)
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER_ITEMS.dp))
-        AddAuthText(text = R.string.your_phone_number_add)
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        PhoneField(phoneNumber = phoneNumber, mask = mask) {
-            phoneNumber = it
-        }
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
-        CountryDropDownMenu(code = code) {
-            code = it
-            mask = "${code.code} ${code.pattern}"
-        }
-        Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
+                                }
 
-        FinishButton(
-            modifier = Modifier.padding(top = 50.dp),
-            text = R.string.finish,
-            visible = {
-                phoneNumber.count() >= 9
-            },
-            onClick = {
-                scope.launch(Dispatchers.Main) {
-                    viewModel.createUserWithPhone(
-                        code.code,
-                        phoneNumber,
-                        activity
-                    ).collect {
-                        when (it) {
-                            is ResultState.Success -> {
-                                Log.d("user", it.data.toString())
-                                onAuthFinished()
-                            }
-
-                            is ResultState.Error -> {
-                                activity.showMsg(it.error.toString())
-                                Log.d("userErr", it.error.toString())
-
-                            }
-
-                            is ResultState.Loading -> {
-                                //     isDialog = true
+                                is ResultState.Loading -> {
+                                    loading = true
+                                }
                             }
                         }
                     }
                 }
+            )
+        }
+
+        if(loading) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(id = R.color.background_loading)),
+                contentAlignment = Alignment.Center) {
+
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.contrast)
+                )
             }
-        )
+        }
     }
 }
 

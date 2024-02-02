@@ -36,6 +36,7 @@
     <color name="background_between">#F8FBFF</color>
     <color name="background">#FFFFFF</color>
     <color name="background_add">#3F51B5</color>
+    <color name="background_loading">#4D000000</color>
     <color name="divider">#E7E9EB</color>
     <color name="divider_second">#E7E9EB</color>
 
