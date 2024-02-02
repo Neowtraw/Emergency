@@ -4,7 +4,7 @@ Emergency
 Emergency App is a smart and reliable app that helps you stay safe and informed in any emergency situation. Whether it's a natural disaster, a medical emergency, or a personal crisis, Emergency App can connect you with the right people and resources to get the help you need.
 
 <p align="center">
-<img  src="./imgs/demo.png" width="30%">
+<img  src="./imgs/demo.png" width="100%">
 </p>
 
 ## APK / BUILD
