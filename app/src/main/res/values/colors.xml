@@ -25,6 +25,8 @@
 
     <color name="article_favorite_view_selected">#D55B1A</color>
     <color name="article_favorite_view_unselected">#D5951A</color>
+    <color name="article_card_favorite">#ADB7EC</color>
+
 
     <color name="contrast">#3F51B5</color>
     <color name="contrast_icons">#3F51B5</color>

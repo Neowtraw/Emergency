@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -192,15 +193,13 @@ fun ArticleInfoScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
-                            .background(brush = getImageBrush())
+                            .requiredHeightIn(max = 300.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         AsyncImage(
                             model = content.description,
                             contentDescription = "Article View",
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentScale = ContentScale.FillHeight,
+                            contentScale = ContentScale.Fit,
                             error = painterResource(R.drawable.placeholder)
                         )
                     }

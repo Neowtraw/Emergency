@@ -1,9 +1,11 @@
 package com.codingub.emergency.domain.models
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.codingub.emergency.data.local.models.ArticleEntity
 import com.codingub.emergency.data.local.models.ArticleRef
 
+@Stable
 data class Article(
     val id: String = "",
     val title: String = "",

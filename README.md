@@ -3,6 +3,10 @@ Emergency
 
 Emergency App is a smart and reliable app that helps you stay safe and informed in any emergency situation. Whether it's a natural disaster, a medical emergency, or a personal crisis, Emergency App can connect you with the right people and resources to get the help you need.
 
+<p align="center">
+<img  src="./imgs/demo.png" width="30%">
+</p>
+
 ## APK / BUILD
 APK - [Debug v1.0](app/debug/poi-debug.apk)
 

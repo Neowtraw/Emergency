@@ -35,7 +35,7 @@ interface RoomDao {
     @Query("SELECT * FROM Article WHERE id = :articleId")
     fun getArticle(articleId: String): Flow<ArticleEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertArticles(articles: List<ArticleRef>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

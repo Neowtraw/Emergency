@@ -80,7 +80,9 @@ class VolleyDataSourceImpl @Inject constructor(
                                     "body > div.wrapper > div > div > div > div > div.main-inside > " +
                                             "div.content-layout > div.content-wrap > div > div > div > p:nth-child(5)"
                                 ).text() ?: "",
-                                link = datastore.readLastNewsLink().asLiveData().value ?: ""
+                                link = doc.select(
+                                    "head > meta:nth-child(11)"
+                                ).attr("content")
                             )
                         )
                     } catch (e: Exception) {

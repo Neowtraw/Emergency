@@ -24,7 +24,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     private lateinit var omVerificationCode: String
 
-    override fun createUserWithPhone(code: String,phone: String, activity: Activity): Flow<ResultState<String>> =
+    override fun createUserWithPhone(code: String, phone: String, activity: Activity): Flow<ResultState<String>> =
         callbackFlow {
             trySend(ResultState.Loading())
 

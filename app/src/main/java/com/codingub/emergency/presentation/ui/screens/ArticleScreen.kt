@@ -248,9 +248,7 @@ private fun ArticleGrid(
                 ArticleItem(image = article.imageUrl,
                     title = article.title,
                     summary = article.summary,
-                    onCardClick = { onCardClick(article) },
-                    liked = article.liked,
-                    onLikeClick = { onLikeClick(article.id, article.liked) })
+                    onCardClick = { onCardClick(article) })
             }
         }
 

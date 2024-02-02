@@ -66,7 +66,7 @@ fun UserAuthScreen(
     val scope = rememberCoroutineScope()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.call))
     var code by rememberSaveable { mutableStateOf(Country.Belarus) }
-    var mask by rememberSaveable { mutableStateOf("${code.code} (00) 000 00 00") }
+    var mask by rememberSaveable { mutableStateOf("${code.code} ${code.pattern}") }
 
 
 
@@ -96,7 +96,7 @@ fun UserAuthScreen(
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
         CountryDropDownMenu(code = code) {
             code = it
-            mask = "${code.code} (000) 000 00 00"
+            mask = "${code.code} ${code.pattern}"
         }
         Spacer(modifier = Modifier.height(MAIN_DIVIDER.dp))
 
@@ -146,7 +146,7 @@ fun PhoneField(
 ) {
 
     OutlinedTextField(
-        value = phoneNumber,
+        value = if(mask.length < phoneNumber.length) phoneNumber.substring(0, mask.length) else phoneNumber,
         onValueChange = { number ->
             onTextChange(number.take(mask.count { it == maskNumber }))
         },

@@ -39,6 +39,7 @@ class NotificationSenderWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return try {
             volleyDataSource.getTheLastNewsLink().also {
+                Log.d("news", volleyDataSource.getTheLastNews(href = it).link)
                 if (datastore.readLastNewsLink().asLiveData().value != it) {
                     displayNotification(volleyDataSource.getTheLastNews(href = it))
 
@@ -46,7 +47,6 @@ class NotificationSenderWorker @AssistedInject constructor(
             }
             Result.success(workDataOf(NOTIFICATION_SEND_KEY to true))
         } catch (e: Exception) {
-            Log.d("test-link", "$e")
             Result.failure(workDataOf(NOTIFICATION_SEND_KEY to false))
         }
     }
@@ -62,7 +62,6 @@ class NotificationSenderWorker @AssistedInject constructor(
             .data(news.imageUrl)
             .target { drawable ->
                 val image = drawable.toBitmap()
-                val vibratePattern = longArrayOf(0, 100, 200, 300)
 
                 val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                     .setContentTitle(news.title)
@@ -71,7 +70,6 @@ class NotificationSenderWorker @AssistedInject constructor(
                     .setLargeIcon(image)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
-                    .setVibrate(vibratePattern)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .build()
 

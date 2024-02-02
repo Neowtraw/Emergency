@@ -29,7 +29,7 @@ class ArticleInfoViewModel @Inject constructor(
     private val getArticle: GetArticle
 ) : ViewModel() {
 
-    private val _article = MutableStateFlow<Article>(Article())
+    private val _article = MutableStateFlow(Article())
     val article = _article.asStateFlow()
 
     private val videoUri = savedStateHandle.getStateFlow("videoUri", "")

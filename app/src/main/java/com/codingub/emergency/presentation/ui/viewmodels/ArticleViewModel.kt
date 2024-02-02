@@ -2,6 +2,7 @@ package com.codingub.emergency.presentation.ui.viewmodels
 
 import android.accounts.NetworkErrorException
 import android.util.Log
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codingub.emergency.core.Resource
@@ -46,6 +47,7 @@ class ArticleViewModel @Inject constructor(
                 if (result.data.isNullOrEmpty()) ArticlesState.NotFound(NoResultsException(resources).message)
                 else ArticlesState.Success(result.data)
             }
+
             is ResultState.Loading -> ArticlesState.Loading
             is ResultState.Error -> {
                 if (result.error is NetworkErrorException ||
@@ -72,6 +74,7 @@ class ArticleViewModel @Inject constructor(
     fun updateArticleToFavorite(id: String, liked: Boolean) {
         viewModelScope.launch {
             updateFavoriteArticle(id, liked)
+
         }
     }
 
@@ -95,6 +98,7 @@ class ArticleViewModel @Inject constructor(
     }
 }
 
+@Immutable
 sealed class ArticlesState {
     object Loading : ArticlesState()
     data class NotFound(val error: String) : ArticlesState()

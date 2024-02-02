@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -39,23 +38,30 @@ class AppRepositoryImpl @Inject constructor(
                 ConnectivityObserver.Status.Available -> {
                     val data = fireDataSource.getArticles().first()
 
+                    Log.d("data", data.toString())
+
                     if (data is ResultState.Success) {
                         withContext(NonCancellable) {
                             localDataSource.insertArticles(data.data!!)
                         }
+
+                        Log.d("data", data.toString())
+
                         ResultState.Success(localDataSource.getAllArticles().first())
                     } else {
-                        if(localDataSource.getAllArticles().first().isNotEmpty()){
+
+                        if (localDataSource.getAllArticles().first().isNotEmpty()) {
                             ResultState.Success(localDataSource.getAllArticles().first())
                         } else {
                             data
                         }
                     }
                 }
+
                 ConnectivityObserver.Status.Unavailable,
                 ConnectivityObserver.Status.Losing,
                 ConnectivityObserver.Status.Lost -> {
-                    if(localDataSource.getAllArticles().first().isNotEmpty()){
+                    if (localDataSource.getAllArticles().first().isNotEmpty()) {
                         ResultState.Success(localDataSource.getAllArticles().first())
                     } else {
                         ResultState.Error(NetworkLostException(resources))
@@ -85,7 +91,7 @@ class AppRepositoryImpl @Inject constructor(
 
                             if (data is ResultState.Success) {
                                 withContext(NonCancellable) {
-                                       localDataSource.insertServices(data.data!!)
+                                    localDataSource.insertServices(data.data!!)
                                 }
                             }
                             data
@@ -97,7 +103,7 @@ class AppRepositoryImpl @Inject constructor(
 
                                 if (data is ResultState.Success) {
                                     withContext(NonCancellable) {
-                                    //     localDataSource.insertArticles(data.data!!)
+                                        //     localDataSource.insertArticles(data.data!!)
                                     }
                                 }
                                 data

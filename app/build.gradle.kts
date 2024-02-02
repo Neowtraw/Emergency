@@ -55,7 +55,7 @@ android {
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
@@ -65,7 +65,7 @@ dependencies {
 
 
     // lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0-rc02")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     // browser
     implementation("androidx.browser:browser:1.7.0")
@@ -89,6 +89,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.49")
     implementation("androidx.hilt:hilt-common:1.1.0")
     implementation("androidx.hilt:hilt-work:1.1.0")
+    implementation("androidx.media3:media3-common:1.2.1")
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
     kapt("com.google.dagger:hilt-android-compiler:2.49")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("androidx.hilt:hilt-compiler:1.1.0")
@@ -124,18 +127,11 @@ dependencies {
     // gson
     implementation("com.google.code.gson:gson:2.10.1")
 
-    // exoplayer
-    implementation("androidx.media3:media3-exoplayer:1.2.0")
-    implementation("androidx.media3:media3-ui:1.2.0")
-
-    implementation("androidx.compose.material:material-icons-extended:1.6.0-beta03")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-
     // permissions
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 
     // location
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-location:21.1.0")
 
     // worker
     implementation("androidx.work:work-runtime-ktx:2.9.0")
@@ -159,10 +155,10 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:5.0.0")
     testImplementation("org.mockito:mockito-android:5.0.0")
 
-    testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
-    kaptTest("com.google.dagger:hilt-android-compiler:2.48.1")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.48.1")
+    testImplementation("com.google.dagger:hilt-android-testing:2.49")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.49")
+    kaptTest("com.google.dagger:hilt-android-compiler:2.49")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.49")
 
     testImplementation("org.assertj:assertj-core:3.24.2")
 

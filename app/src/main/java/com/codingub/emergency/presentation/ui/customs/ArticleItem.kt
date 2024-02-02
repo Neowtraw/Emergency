@@ -51,8 +51,6 @@ fun ArticleItem(
     image: String,
     title: String,
     summary: String,
-    liked: Boolean,
-    onLikeClick: () -> Unit,
     onCardClick: () -> Unit
 ) {
     Card(
@@ -108,7 +106,6 @@ fun ArticleItem(
                         .fillMaxWidth()
                         .weight(1f)
                 )
-                FavoriteIcon(liked = liked, onLikeClick)
             }
 
             Text(

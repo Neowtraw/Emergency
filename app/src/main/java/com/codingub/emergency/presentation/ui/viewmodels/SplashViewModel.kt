@@ -40,6 +40,7 @@ class SplashViewModel @Inject constructor(
                 }
 
                 withContext(Dispatchers.Main) {
+                    // temporary
                     delay(700)
                     _isLoading.value = false
 

@@ -43,7 +43,7 @@ class NetworkManager @Inject constructor(
             }
             connectivityManager.registerDefaultNetworkCallback(callback)
             awaitClose{
-            //    connectivityManager.unregisterNetworkCallback(callback)
+                connectivityManager.unregisterNetworkCallback(callback)
             }
         }.distinctUntilChanged()
     }
