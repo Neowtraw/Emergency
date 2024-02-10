@@ -9,7 +9,6 @@ import com.codingub.emergency.data.utils.Constants.ARTICLE_COLLECTION
 import com.codingub.emergency.data.utils.Constants.SERVICE_COLLECTION
 import com.codingub.emergency.data.utils.NetworkLostException
 import com.codingub.emergency.data.utils.NoResultsException
-import com.codingub.emergency.data.utils.network.ConnectivityObserver
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.models.Service
 import com.google.android.gms.tasks.Tasks
@@ -19,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 

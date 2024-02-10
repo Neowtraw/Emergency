@@ -77,6 +77,7 @@ fun UserAuthScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(getBackgroundBrush())
+
                 .padding(MAIN_PADDING.dp)
                 .clickable(enabled = !loading) {},
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -51,7 +51,6 @@ fun setupNavGraph(
     activity: Activity
 ) {
 
-
     NavHost(
         navController = navController,
         startDestination = startDestination,

@@ -1,6 +1,5 @@
 package com.codingub.emergency
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -47,11 +46,13 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLES
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO
+import com.codingub.emergency.presentation.navigation.NavRoute.ARTICLE_INFO_I
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME
 import com.codingub.emergency.presentation.navigation.NavRoute.HOME_BOARDING
 import com.codingub.emergency.presentation.navigation.NavRoute.INFO
@@ -66,8 +67,6 @@ import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -77,11 +76,9 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
 
-
     @Inject
     lateinit var splashViewModel: SplashViewModel
 
-    @OptIn(ExperimentalPermissionsApi::class)
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,16 +104,16 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
 
                 when (navBackStackEntry?.destination?.route) {
-                    WELCOME, USER_AUTH, USER_INFO, ARTICLE_INFO -> {
+                    WELCOME, USER_AUTH, USER_INFO, ARTICLE_INFO, ARTICLE_INFO_I -> {
                         bottomBarState.value = false
                     }
 
-                    HOME, HOME_BOARDING -> {
+                    HOME -> {
                         bottomBarState.value = true
                         selectedItemIndex = 0
                     }
 
-                    ARTICLES, ARTICLE_BOARDING -> {
+                    ARTICLES -> {
                         bottomBarState.value = true
                         selectedItemIndex = 1
                     }
@@ -154,7 +151,13 @@ class MainActivity : ComponentActivity() {
                                                 modifier = Modifier
                                                     .fillMaxSize()
                                                     .noRippleClickable {
-                                                        navController.navigate(item.route)
+                                                        navController.navigate(item.route) {
+                                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                                saveState = true
+                                                            }
+                                                            launchSingleTop = true
+                                                            restoreState = true
+                                                        }
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -232,7 +235,7 @@ fun Context.findActivity(): Activity? {
 }
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    clickable(
+    this.clickable(
         indication = null,
         interactionSource = remember {
             MutableInteractionSource()

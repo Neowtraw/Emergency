@@ -6,23 +6,21 @@ import com.codingub.emergency.core.ResultState
 import com.codingub.emergency.data.local.datasource.LocalDataSource
 import com.codingub.emergency.data.remote.datasource.FireDataSource
 import com.codingub.emergency.data.utils.NetworkLostException
-import com.codingub.emergency.data.utils.network.ConnectivityObserver
+import com.codingub.emergency.data.utils.network.NetworkManager
 import com.codingub.emergency.domain.models.Article
 import com.codingub.emergency.domain.models.Service
 import com.codingub.emergency.domain.repos.AppRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
     private val fireDataSource: FireDataSource,
     private val localDataSource: LocalDataSource,
-    private val network: ConnectivityObserver,
+    private val network: NetworkManager,
     private val resources: Resource
 ) : AppRepository {
 
@@ -31,11 +29,9 @@ class AppRepositoryImpl @Inject constructor(
 
     override fun getArticles(): Flow<ResultState<List<Article>>> = channelFlow {
         try {
-            val status = network.observe().take(1).first()
-            Log.d("status", status.toString())
 
-            val result: ResultState<List<Article>> = when (status) {
-                ConnectivityObserver.Status.Available -> {
+            val result: ResultState<List<Article>> = when (network.isConnected) {
+                true -> {
                     val data = fireDataSource.getArticles().first()
 
                     Log.d("data", data.toString())
@@ -57,10 +53,7 @@ class AppRepositoryImpl @Inject constructor(
                         }
                     }
                 }
-
-                ConnectivityObserver.Status.Unavailable,
-                ConnectivityObserver.Status.Losing,
-                ConnectivityObserver.Status.Lost -> {
+                false -> {
                     if (localDataSource.getAllArticles().first().isNotEmpty()) {
                         ResultState.Success(localDataSource.getAllArticles().first())
                     } else {
@@ -84,40 +77,34 @@ class AppRepositoryImpl @Inject constructor(
     override fun getServicesFromLanguage(language: String): Flow<ResultState<List<Service>>> =
         channelFlow {
             try {
-                network.observe().collectLatest { status ->
-                    val result: ResultState<List<Service>> = when (status) {
-                        ConnectivityObserver.Status.Available -> {
+                val result: ResultState<List<Service>> = when (network.isConnected) {
+                    true -> {
+                        val data = fireDataSource.getServicesFromLanguage(language).first()
+
+                        if (data is ResultState.Success) {
+                            withContext(NonCancellable) {
+                                localDataSource.insertServices(data.data!!)
+                            }
+                        }
+                        data
+                    }
+                    false -> {
+                        if (localDataSource.getSavedServices().first().isEmpty()) {
                             val data = fireDataSource.getServicesFromLanguage(language).first()
 
                             if (data is ResultState.Success) {
                                 withContext(NonCancellable) {
-                                    localDataSource.insertServices(data.data!!)
+                                    //     localDataSource.insertArticles(data.data!!)
                                 }
                             }
                             data
-                        }
-
-                        ConnectivityObserver.Status.Losing -> {
-                            if (localDataSource.getSavedServices().first().isEmpty()) {
-                                val data = fireDataSource.getServicesFromLanguage(language).first()
-
-                                if (data is ResultState.Success) {
-                                    withContext(NonCancellable) {
-                                        //     localDataSource.insertArticles(data.data!!)
-                                    }
-                                }
-                                data
-                            } else {
-                                ResultState.Success(localDataSource.getSavedServices().first())
-                            }
-                        }
-
-                        else -> {
+                        } else {
                             ResultState.Success(localDataSource.getSavedServices().first())
                         }
                     }
-                    send(result)
                 }
+                send(result)
+
             } catch (e: Throwable) {
                 send(ResultState.Error(e))
             }
